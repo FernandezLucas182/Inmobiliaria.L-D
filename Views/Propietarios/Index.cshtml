@@ -21,17 +21,17 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>@item.Nombre</td>
-            <td>@item.Dni</td>
-            <td>@item.Telefono</td>
-            <td>@item.Email</td>
+            <td>@item.nombre</td>
+            <td>@item.dni</td>
+            <td>@item.telefono</td>
+            <td>@item.email</td>
             <td class="text-center">
                 <!-- Botón Editar -->
-                <a asp-action="Edit" asp-route-id="@item.Id" 
+                <a asp-action="Edit" asp-route-id="@item.id_propietario" 
                    class="btn btn-warning btn-sm">Editar</a>
 
                 <!-- Botón Eliminar -->
-                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                <form asp-action="Delete" asp-route-id="@item.id_propietario" method="post" style="display:inline">
                     <button type="submit" class="btn btn-danger btn-sm"
                             onclick="return confirm('¿Seguro que quieres eliminar este propietario?');">
                         Eliminar
