@@ -18,19 +18,22 @@ namespace InmobiliariaMVC.Models
 		[Required(ErrorMessage = "La dirección es requerida")]
 		public string? direccion { get; set; }
 		[Required]
-		public int ambientes { get; set; }
+		public int ambiente { get; set; }
 		[Required]
 		public int superficie { get; set; }
 		public decimal latitud { get; set; }
 		public decimal longitud { get; set; }
 		[Display(Name = "Dueño")]
-		public int PropietarioId { get; set; }
-		[ForeignKey(nameof(PropietarioId))]
+		public int id_propietario{ get; set; }
+		[ForeignKey(nameof(id_propietario))]
     [BindNever]
-		public Propietario? Duenio { get; set; }
-		public string? Portada { get; set; }
+		public Propietario? nombre { get; set; }
+
+		public Propietario? apellido { get; set; }
+
+		public string? portada { get; set; }
 		[NotMapped]//Para EF
-		public bool Habilitado { get; set; } = true;
+		public bool habilitado { get; set; } = true;
 	}
 	
 }
