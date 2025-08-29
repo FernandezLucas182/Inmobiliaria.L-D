@@ -13,18 +13,19 @@ namespace InmobiliariaMVC.Models
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO inquilino (Dni, NombreCompleto, Telefono, Email)
+                string sql = @"INSERT INTO inquilino (dni, nombre, apellido, telefono, email)
                                VALUES (@dni, @nombreCompleto, @telefono, @email);
                                SELECT LAST_INSERT_ID();";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@dni", inquilino.Dni);
-                    command.Parameters.AddWithValue("@nombreCompleto", inquilino.NombreCompleto);
-                    command.Parameters.AddWithValue("@telefono", inquilino.Telefono ?? "");
-                    command.Parameters.AddWithValue("@email", inquilino.Email ?? "");
+                    command.Parameters.AddWithValue("@dni", inquilino.dni);
+                    command.Parameters.AddWithValue("@nombre", inquilino.nombre);
+                    command.Parameters.AddWithValue("@apellido", inquilino.apellido);
+                    command.Parameters.AddWithValue("@telefono", inquilino.telefono ?? "");
+                    command.Parameters.AddWithValue("@email", inquilino.email ?? "");
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
-                    inquilino.Id = res;
+                    inquilino.id_inquilino = res;
                     connection.Close();
                 }
             }
@@ -37,7 +38,7 @@ namespace InmobiliariaMVC.Models
             var lista = new List<Inquilino>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT Id, Dni, NombreCompleto, Telefono, Email FROM inquilino;";
+                string sql = @"SELECT id_inquilino, dni, nombre, apellido, telefono, email FROM inquilino;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     connection.Open();
@@ -46,11 +47,12 @@ namespace InmobiliariaMVC.Models
                     {
                         var i = new Inquilino
                         {
-                            Id = reader.GetInt32("Id"),
-                            Dni = reader.GetString("Dni"),
-                            NombreCompleto = reader.GetString("NombreCompleto"),
-                            Telefono = reader["Telefono"] != DBNull.Value ? reader.GetString("Telefono") : "",
-                            Email = reader["Email"] != DBNull.Value ? reader.GetString("Email") : ""
+                            id_inquilino= reader.GetInt32("id_inquilino"),
+                            dni = reader.GetString("dni"),
+                            nombre = reader.GetString("nombre"),
+                            apellido = reader.GetString("apellido"),
+                            telefono = reader["telefono"] != DBNull.Value ? reader.GetString("telefono") : "",
+                            email = reader["email"] != DBNull.Value ? reader.GetString("email") : ""
                         };
                         lista.Add(i);
                     }
@@ -66,22 +68,23 @@ namespace InmobiliariaMVC.Models
             Inquilino? inquilino = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT Id, Dni, NombreCompleto, Telefono, Email
-                               FROM inquilino WHERE Id = @id;";
+                string sql = @"SELECT id_inquilino, dni, nombre, apellido, telefono, email
+                               FROM inquilino WHERE Id = @id_inquilino;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@id_inquilino", id);
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         inquilino = new Inquilino
                         {
-                            Id = reader.GetInt32("Id"),
-                            Dni = reader.GetString("Dni"),
-                            NombreCompleto = reader.GetString("NombreCompleto"),
-                            Telefono = reader["Telefono"] != DBNull.Value ? reader.GetString("Telefono") : "",
-                            Email = reader["Email"] != DBNull.Value ? reader.GetString("Email") : ""
+                            id_inquilino = reader.GetInt32("id_inquilino"),
+                            dni = reader.GetString("dni"),
+                            nombre = reader.GetString("nombre"),
+                            apellido = reader.GetString("apellido"),
+                            telefono = reader["telefono"] != DBNull.Value ? reader.GetString("telefono") : "",
+                            email = reader["email"] != DBNull.Value ? reader.GetString("email") : ""
                         };
                     }
                     connection.Close();
@@ -97,16 +100,17 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE inquilino 
-                               SET Dni = @dni, NombreCompleto = @nombreCompleto, 
-                                   Telefono = @telefono, Email = @email
-                               WHERE Id = @id;";
+                               SET Dni = @dni, nombre = @nombre, apellido = @apellido,
+                                   telefono = @telefono, email = @email
+                               WHERE id_inquilino = @id_inquilino;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@dni", inquilino.Dni);
-                    command.Parameters.AddWithValue("@nombreCompleto", inquilino.NombreCompleto);
-                    command.Parameters.AddWithValue("@telefono", inquilino.Telefono ?? "");
-                    command.Parameters.AddWithValue("@email", inquilino.Email ?? "");
-                    command.Parameters.AddWithValue("@id", inquilino.Id);
+                    command.Parameters.AddWithValue("@dni", inquilino.dni);
+                    command.Parameters.AddWithValue("@nombre", inquilino.nombre);
+                    command.Parameters.AddWithValue("@apellido", inquilino.apellido);
+                    command.Parameters.AddWithValue("@telefono", inquilino.telefono ?? "");
+                    command.Parameters.AddWithValue("@email", inquilino.email ?? "");
+                    command.Parameters.AddWithValue("@id_inquilino", inquilino.id_inquilino);
                     connection.Open();
                     res = command.ExecuteNonQuery();
                     connection.Close();
@@ -121,10 +125,10 @@ namespace InmobiliariaMVC.Models
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"DELETE FROM inquilino WHERE Id = @id;";
+                string sql = @"DELETE FROM inquilino WHERE id_inquilino = @id_inquilino;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@id_inquilino", id);
                     connection.Open();
                     res = command.ExecuteNonQuery();
                     connection.Close();

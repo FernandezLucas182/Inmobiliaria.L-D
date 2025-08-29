@@ -11,7 +11,7 @@ namespace InmobiliariaMVC.Models
             var lista = new List<Propietario>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "SELECT Id, Dni, Apellido, Nombre, Telefono, Email FROM Propietario;";
+                string sql = "SELECT id_propietario, dni, apellido, nombre, telefono, email FROM Propietario;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     connection.Open();
@@ -21,12 +21,12 @@ namespace InmobiliariaMVC.Models
                         {
                             lista.Add(new Propietario
                             {
-                                Id = reader.GetInt32("Id"),
-                                Dni = reader.GetString("Dni"),
-                                Apellido = reader.GetString("Apellido"),
-                                Nombre = reader.GetString("Nombre"),
-                                Telefono = reader.IsDBNull(reader.GetOrdinal("Telefono")) ? "" : reader.GetString("Telefono"),
-                                Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? "" : reader.GetString("Email")
+                                id_propietario = reader.GetInt32("id_propietario"),
+                                dni = reader.GetString("dni"),
+                                apellido = reader.GetString("apellido"),
+                                nombre = reader.GetString("nombre"),
+                                telefono = reader.IsDBNull(reader.GetOrdinal("telefono")) ? "" : reader.GetString("telefono"),
+                                email = reader.IsDBNull(reader.GetOrdinal("email")) ? "" : reader.GetString("email")
                             });
                         }
                     }
@@ -40,10 +40,10 @@ namespace InmobiliariaMVC.Models
             Propietario? propietario = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "SELECT Id, Dni, Apellido, Nombre, Telefono, Email FROM Propietario WHERE Id=@id;";
+                string sql = "SELECT id_propietario, dni, apellido, nombre, telefono, email FROM Propietario WHERE id_propietario=@id_propietario;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@id_propietario", id);
                     connection.Open();
                     using (var reader = command.ExecuteReader())
                     {
@@ -51,12 +51,12 @@ namespace InmobiliariaMVC.Models
                         {
                             propietario = new Propietario
                             {
-                                Id = reader.GetInt32("Id"),
-                                Dni = reader.GetString("Dni"),
-                                Apellido = reader.GetString("Apellido"),
-                                Nombre = reader.GetString("Nombre"),
-                                Telefono = reader.IsDBNull(reader.GetOrdinal("Telefono")) ? "" : reader.GetString("Telefono"),
-                                Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? "" : reader.GetString("Email")
+                                id_propietario = reader.GetInt32("id_propietario"),
+                                dni = reader.GetString("dni"),
+                                apellido = reader.GetString("apellido"),
+                                nombre = reader.GetString("nombre"),
+                                telefono = reader.IsDBNull(reader.GetOrdinal("telefono")) ? "" : reader.GetString("telefono"),
+                                email = reader.IsDBNull(reader.GetOrdinal("email")) ? "" : reader.GetString("email")
                             };
                         }
                     }
@@ -70,20 +70,20 @@ namespace InmobiliariaMVC.Models
             int idInsertado = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO Propietario (Dni, Apellido, Nombre, Telefono, Email) 
+                string sql = @"INSERT INTO Propietario (dni, apellido, nombre, telefono, email) 
                                VALUES (@dni, @apellido, @nombre, @telefono, @correo);
                                SELECT LAST_INSERT_ID();";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@dni", propietario.Dni);
-                    command.Parameters.AddWithValue("@apellido", propietario.Apellido);
-                    command.Parameters.AddWithValue("@nombre", propietario.Nombre);
-                    command.Parameters.AddWithValue("@telefono", propietario.Telefono);
-                    command.Parameters.AddWithValue("@correo", propietario.Email);
+                    command.Parameters.AddWithValue("@dni", propietario.dni);
+                    command.Parameters.AddWithValue("@apellido", propietario.apellido);
+                    command.Parameters.AddWithValue("@nombre", propietario.nombre);
+                    command.Parameters.AddWithValue("@telefono", propietario.telefono);
+                    command.Parameters.AddWithValue("@correo", propietario.email);
 
                     connection.Open();
                     idInsertado = Convert.ToInt32(command.ExecuteScalar());
-                    propietario.Id = idInsertado;
+                    propietario.id_propietario = idInsertado;
                 }
             }
             return idInsertado;
@@ -95,17 +95,17 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Propietario SET 
-                                Dni=@dni, Apellido=@apellido, Nombre=@nombre, 
-                                Telefono=@telefono, Email=@correo
-                               WHERE Id=@id;";
+                                dni=@dni, apellido=@apellido, nombre=@nombre, 
+                                telefono=@telefono, email=@correo
+                               WHERE id_propietario=@id_propietario;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@dni", propietario.Dni);
-                    command.Parameters.AddWithValue("@apellido", propietario.Apellido);
-                    command.Parameters.AddWithValue("@nombre", propietario.Nombre);
-                    command.Parameters.AddWithValue("@telefono", propietario.Telefono);
-                    command.Parameters.AddWithValue("@correo", propietario.Email);
-                    command.Parameters.AddWithValue("@id", propietario.Id);
+                    command.Parameters.AddWithValue("@dni", propietario.dni);
+                    command.Parameters.AddWithValue("@apellido", propietario.apellido);
+                    command.Parameters.AddWithValue("@nombre", propietario.nombre);
+                    command.Parameters.AddWithValue("@telefono", propietario.telefono);
+                    command.Parameters.AddWithValue("@correo", propietario.email);
+                    command.Parameters.AddWithValue("@id_propietario", propietario.id_propietario);
 
                     connection.Open();
                     filas = command.ExecuteNonQuery();
@@ -119,10 +119,10 @@ namespace InmobiliariaMVC.Models
             int filas = 0;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "DELETE FROM Propietario WHERE Id=@id;";
+                string sql = "DELETE FROM Propietario WHERE id_propietario=@id_propietario;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@id_propietario", id);
                     connection.Open();
                     filas = command.ExecuteNonQuery();
                 }
