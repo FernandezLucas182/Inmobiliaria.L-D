@@ -1,39 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
-namespace InmobiliariaMVC.Models
+﻿namespace InmobiliariaMVC.Models
 {
-	[Table("Inmuebles")]
-	public class Inmueble
-	{
-		[Display(Name = "Nº")]
-		public int id_inmueble { get; set; }
-		//[Required]
-		[Display(Name = "Dirección")]
-		[Required(ErrorMessage = "La dirección es requerida")]
-		public string? direccion { get; set; }
-		[Required]
-		public int ambiente { get; set; }
-		[Required]
-		public int superficie { get; set; }
-		public decimal latitud { get; set; }
-		public decimal longitud { get; set; }
-		[Display(Name = "Dueño")]
-		public int id_propietario{ get; set; }
-		[ForeignKey(nameof(id_propietario))]
-    [BindNever]
-		public Propietario? nombre { get; set; }
+public class Inmueble
+{
+	public int IdInmueble { get; set; }
+	public int IdPropietario { get; set; }
+	public  string? Direccion { get; set; }
+	public string Uso { get; set; } = "";// "Residencial" o "Comercial"
+	public int Ambientes { get; set; }
+	public decimal Precio { get; set; }
+	public bool Estado { get; set; } = true;// "Disponible" o "Suspendido"
+	public required Tipo Tipo { get; set; }   // acá guardás "Casa", "Depto", "Local"
 
-		public Propietario? apellido { get; set; }
-
-		public string? portada { get; set; }
-		[NotMapped]//Para EF
-		public bool habilitado { get; set; } = true;
-	}
-	
+	// Relación
+	public Propietario? Propietario { get; set; }
+}
 }
