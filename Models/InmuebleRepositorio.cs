@@ -4,7 +4,7 @@ namespace InmobiliariaMVC.Models
 {
     public class InmuebleRepositorio
     {
-        string connectionString = "server=localhost;database=inmobiliaria;uid=root;pwd=;";
+        private readonly string connectionString = "server=localhost;port=3306;database=inmobiliaria;uid=root;";
 
         public List<Inmueble> ObtenerTodos()
         {
