@@ -1,0 +1,66 @@
+@model IEnumerable<InmobiliariaMVC.Models.Inmueble>
+
+@{
+    ViewData["Title"] = "Inmuebles";
+}
+
+<h2>Listado de Inmuebles</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nuevo Inmueble</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Dirección</th>
+            <th>Uso</th>
+            <th>Ambientes</th>
+            <th>Precio</th>
+            <th>Propietario</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Direccion</td>
+            <td>@item.Uso</td>
+            <td>@item.Ambientes</td>
+            <td>@item.Precio</td>
+            <td>@item.Propietario?.apellido @item.Propietario?.nombre</td>
+            <td>@item.Tipo.nombre</td>
+            <td>
+                @if (item.Estado == true)
+                {
+                    <span class="badge bg-success">Activo</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Inactivo</span>
+                }
+            </td>
+            <td>
+                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.IdInmueble">Editar</a>
+
+                <form asp-action="ToggleEstado" method="post" style="display:inline">
+                    <input type="hidden" name="id" value="@item.IdInmueble" />
+                    @if (item.Estado == true)
+                    {
+                        <input type="hidden" name="habilitar" value="false" />
+                        <button type="submit" class="btn btn-sm btn-danger">Deshabilitar</button>
+                    }
+                    else
+                    {
+                        <input type="hidden" name="habilitar" value="true" />
+                        <button type="submit" class="btn btn-sm btn-success">Habilitar</button>
+                    }
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
