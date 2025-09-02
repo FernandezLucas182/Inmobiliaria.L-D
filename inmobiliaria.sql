@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-08-2025 a las 23:43:07
+-- Tiempo de generación: 03-09-2025 a las 01:18:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -130,8 +130,16 @@ INSERT INTO `propietario` (`id_propietario`, `dni`, `apellido`, `nombre`, `telef
 
 CREATE TABLE `tipo` (
   `id_tipo` int(11) NOT NULL,
-  `nombre` int(11) NOT NULL
+  `nombre` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo`
+--
+
+INSERT INTO `tipo` (`id_tipo`, `nombre`) VALUES
+(1, 'Casa'),
+(2, 'Departamento');
 
 -- --------------------------------------------------------
 
@@ -158,13 +166,17 @@ CREATE TABLE `usuario` (
 -- Indices de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  ADD PRIMARY KEY (`id_contrato`);
+  ADD PRIMARY KEY (`id_contrato`),
+  ADD KEY `id_inmueble` (`id_inmueble`),
+  ADD KEY `id_inquilino` (`id_inquilino`);
 
 --
 -- Indices de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  ADD PRIMARY KEY (`id_inmueble`);
+  ADD PRIMARY KEY (`id_inmueble`),
+  ADD KEY `id_propietario` (`id_propietario`),
+  ADD KEY `id_tipo` (`id_tipo`);
 
 --
 -- Indices de la tabla `inquilino`
@@ -177,7 +189,8 @@ ALTER TABLE `inquilino`
 -- Indices de la tabla `pago`
 --
 ALTER TABLE `pago`
-  ADD PRIMARY KEY (`id_pago`);
+  ADD PRIMARY KEY (`id_pago`),
+  ADD KEY `id_contrato` (`id_contrato`);
 
 --
 -- Indices de la tabla `propietario`
@@ -185,6 +198,12 @@ ALTER TABLE `pago`
 ALTER TABLE `propietario`
   ADD PRIMARY KEY (`id_propietario`),
   ADD UNIQUE KEY `uq_propietario_dni` (`dni`);
+
+--
+-- Indices de la tabla `tipo`
+--
+ALTER TABLE `tipo`
+  ADD PRIMARY KEY (`id_tipo`);
 
 --
 -- Indices de la tabla `usuario`
@@ -227,10 +246,40 @@ ALTER TABLE `propietario`
   MODIFY `id_propietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de la tabla `tipo`
+--
+ALTER TABLE `tipo`
+  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
   MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `contrato`
+--
+ALTER TABLE `contrato`
+  ADD CONSTRAINT `contrato_ibfk_1` FOREIGN KEY (`id_inmueble`) REFERENCES `inmueble` (`id_inmueble`),
+  ADD CONSTRAINT `contrato_ibfk_2` FOREIGN KEY (`id_inquilino`) REFERENCES `inquilino` (`id_inquilino`);
+
+--
+-- Filtros para la tabla `inmueble`
+--
+ALTER TABLE `inmueble`
+  ADD CONSTRAINT `inmueble_ibfk_1` FOREIGN KEY (`id_propietario`) REFERENCES `propietario` (`id_propietario`),
+  ADD CONSTRAINT `inmueble_ibfk_2` FOREIGN KEY (`id_tipo`) REFERENCES `tipo` (`id_tipo`);
+
+--
+-- Filtros para la tabla `pago`
+--
+ALTER TABLE `pago`
+  ADD CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`id_contrato`) REFERENCES `contrato` (`id_contrato`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
