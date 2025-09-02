@@ -5,12 +5,9 @@ namespace InmobiliariaMVC.Controllers
 {
     public class InmuebleController : Controller
     {
-        private readonly InmuebleRepositorio repositorio;
+        private readonly InmuebleRepositorio repositorio = new InmuebleRepositorio();
 
-        public InmuebleController()
-        {
-            repositorio = new InmuebleRepositorio();
-        }
+        
 
         // GET: Inmueble
         public IActionResult Index()
