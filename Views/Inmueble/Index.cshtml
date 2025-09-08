@@ -27,14 +27,14 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>@item.Direccion</td>
-            <td>@item.Uso</td>
-            <td>@item.Ambientes</td>
-            <td>@item.Precio</td>
+            <td>@item.direccion</td>
+            <td>@item.uso</td>
+            <td>@item.ambiente</td>
+            <td>@item.precio</td>
             <td>@item.Propietario?.apellido @item.Propietario?.nombre</td>
             <td>@item.Tipo.nombre</td>
             <td>
-                @if (item.Estado == true)
+                @if (item.estado == true)
                 {
                     <span class="badge bg-success">Activo</span>
                 }
@@ -44,11 +44,11 @@
                 }
             </td>
             <td>
-                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.IdInmueble">Editar</a>
+                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.id_inmueble">Editar</a>
 
                 <form asp-action="ToggleEstado" method="post" style="display:inline">
-                    <input type="hidden" name="id" value="@item.IdInmueble" />
-                    @if (item.Estado == true)
+                    <input type="hidden" name="id" value="@item.id_inmueble" />
+                    @if (item.estado == true)
                     {
                         <input type="hidden" name="habilitar" value="false" />
                         <button type="submit" class="btn btn-sm btn-danger">Deshabilitar</button>

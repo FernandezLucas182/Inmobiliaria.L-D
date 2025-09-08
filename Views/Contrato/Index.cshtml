@@ -1,0 +1,43 @@
+@model IEnumerable<InmobiliariaMVC.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Contratos";
+}
+
+<h2>Contratos</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nuevo Contrato</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Inquilino</th>
+            <th>Inmueble</th>
+            <th>Monto</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Inquilino?.nombre</td>
+            <td>@item.Inmueble?.direccion</td>
+            <td>@item.MontoMensual</td>
+            <td>@item.FechaInicio.ToShortDateString()</td>
+            <td>@item.FechaFin.ToShortDateString()</td>
+            <td>@item.Estado</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

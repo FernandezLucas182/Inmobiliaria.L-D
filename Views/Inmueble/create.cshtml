@@ -1,0 +1,67 @@
+@model InmobiliariaMVC.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Crear Inmueble";
+}
+
+<h2>Nuevo Inmueble</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="direccion" class="control-label"></label>
+        <input asp-for="direccion" class="form-control" />
+        <span asp-validation-for="direccion" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="uso" class="control-label"></label>
+        <input asp-for="uso" class="form-control" />
+        <span asp-validation-for="uso" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ambiente" class="control-label"></label>
+        <input asp-for="ambiente" class="form-control" />
+        <span asp-validation-for="ambiente" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="precio" class="control-label"></label>
+        <input asp-for="precio" class="form-control" />
+        <span asp-validation-for="precio" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="estado" class="control-label"></label>
+        <select asp-for="estado" class="form-control">
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+        </select>
+        <span asp-validation-for="estado" class="text-danger"></span>
+    </div>
+
+    <!-- 🔹 Propietario -->
+    <div class="form-group">
+        <label asp-for="Propietario.id_propietario" class="control-label">Propietario</label>
+        <select asp-for="Propietario.id_propietario" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Propietarios, "id_propietario", "nombre" , "apellido"))">
+            <option value="">-- Seleccione un propietario --</option>
+        </select>
+        <span asp-validation-for="Propietario.id_propietario" class="text-danger"></span>
+    </div>
+
+    <!-- 🔹 Tipo de inmueble -->
+    <div class="form-group">
+        <label asp-for="Tipo.id_tipo" class="control-label">Tipo</label>
+        <select asp-for="Tipo.id_tipo" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Tipo, "id_tipo", "nombre"))">
+            <option value="">-- Seleccione un tipo --</option>
+        </select>
+        <span asp-validation-for="Tipo.id_tipo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <input type="submit" value="Guardar" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

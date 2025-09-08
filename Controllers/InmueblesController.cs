@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
 
+
 namespace InmobiliariaMVC.Controllers
 {
     public class InmuebleController : Controller
@@ -30,6 +31,11 @@ namespace InmobiliariaMVC.Controllers
         // GET: Inmueble/Create
         public IActionResult Create()
         {
+            var repoPropietario = new PropietarioRepositorio();
+            ViewBag.Propietarios = repoPropietario.ObtenerTodos();
+
+            var repoTipo = new TipoRepositorio();
+            ViewBag.Tipo = repoTipo.ObtenerTodos();
             return View();
         }
 
@@ -51,7 +57,7 @@ namespace InmobiliariaMVC.Controllers
 
         // GET: Inmueble/Edit/5
         public IActionResult Edit(int id)
-        {
+         {
             var inmueble = repositorio.ObtenerPorId(id);
             if (inmueble == null)
             {
@@ -65,7 +71,7 @@ namespace InmobiliariaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Inmueble inmueble)
         {
-            if (id != inmueble.IdInmueble)
+            if (id != inmueble.id_inmueble)
             {
                 return BadRequest();
             }
