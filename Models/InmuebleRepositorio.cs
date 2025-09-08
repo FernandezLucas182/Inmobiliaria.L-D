@@ -11,7 +11,7 @@ namespace InmobiliariaMVC.Models
             var lista = new List<Inmueble>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambientes, i.precio, i.estado,
+                string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambiente, i.precio, i.habilitado,
                                       p.id_propietario, p.apellido, p.nombre,
                                       t.id_tipo, t.nombre AS TipoNombre
                                FROM inmueble i
@@ -27,12 +27,12 @@ namespace InmobiliariaMVC.Models
                         {
                             var inmueble = new Inmueble
                             {
-                                IdInmueble = reader.GetInt32("id_inmueble"),
-                                Direccion = reader.GetString("direccion"),
-                                Uso = reader.GetString("uso"),
-                                Ambientes = reader.GetInt32("ambientes"),
-                                Precio = reader.GetDecimal("precio"),
-                                Estado = reader.GetBoolean("estado"),
+                                id_inmueble = reader.GetInt32("id_inmueble"),
+                                direccion = reader.GetString("direccion"),
+                                uso = reader.GetString("uso"),
+                                ambiente = reader.GetInt32("ambiente"),
+                                precio = reader.GetDecimal("precio"),
+                                estado = reader.GetBoolean("habilitado"),
                                 Propietario = new Propietario
                                 {
                                     id_propietario = reader.GetInt32("id_Propietario"),
@@ -83,17 +83,17 @@ namespace InmobiliariaMVC.Models
             int nuevoId;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO inmueble (direccion, uso, ambientes, precio, estado, id_propietario, id_tipo)
-                               VALUES (@direccion, @uso, @ambientes, @precio, @estado, @id_propietario, @id_tipo);
+                string sql = @"INSERT INTO inmueble (direccion, uso, ambiente, precio, habilitado, id_propietario, id_tipo)
+                               VALUES (@direccion, @uso, @ambiente, @precio, @estado, @id_propietario, @id_tipo);
                                SELECT LAST_INSERT_ID();";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@direccion", inmueble.Direccion);
-                    command.Parameters.AddWithValue("@uso", inmueble.Uso);
-                    command.Parameters.AddWithValue("@ambientes", inmueble.Ambientes);
-                    command.Parameters.AddWithValue("@precio", inmueble.Precio);
-                    command.Parameters.AddWithValue("@estado", inmueble.Estado);
+                    command.Parameters.AddWithValue("@direccion", inmueble.direccion);
+                    command.Parameters.AddWithValue("@uso", inmueble.uso);
+                    command.Parameters.AddWithValue("@ambiente", inmueble.ambiente);
+                    command.Parameters.AddWithValue("@precio", inmueble.precio);
+                    command.Parameters.AddWithValue("@habilitado", inmueble.estado);
                     command.Parameters.AddWithValue("@id_propietario", inmueble.Propietario?.id_propietario);
                     command.Parameters.AddWithValue("@id_tipo", inmueble.Tipo.id_tipo);
 
@@ -111,9 +111,9 @@ namespace InmobiliariaMVC.Models
                 string sql = @"UPDATE inmueble 
                                SET direccion = @direccion, 
                                    uso = @uso, 
-                                   ambientes = @ambientes, 
+                                   ambiente = @ambiente, 
                                    precio = @precio, 
-                                   estado = @estado, 
+                                   habilitado = @habilitado, 
                                    id_propietario = @id_propietario, 
                                    id_tipo = @id_tipo
                                WHERE id_inmueble = @id_inmueble;";
@@ -121,14 +121,14 @@ namespace InmobiliariaMVC.Models
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     // Parámetros
-                    command.Parameters.AddWithValue("@direccion", inmueble.Direccion);
-                    command.Parameters.AddWithValue("@uso", inmueble.Uso);
-                    command.Parameters.AddWithValue("@ambientes", inmueble.Ambientes);
-                    command.Parameters.AddWithValue("@precio", inmueble.Precio);
-                    command.Parameters.AddWithValue("@estado", inmueble.Estado);
+                    command.Parameters.AddWithValue("@direccion", inmueble.direccion);
+                    command.Parameters.AddWithValue("@uso", inmueble.uso);
+                    command.Parameters.AddWithValue("@ambiente", inmueble.ambiente);
+                    command.Parameters.AddWithValue("@precio", inmueble.precio);
+                    command.Parameters.AddWithValue("@habilitado", inmueble.estado);
                     command.Parameters.AddWithValue("@id_propietario", inmueble.Propietario?.id_propietario);
                     command.Parameters.AddWithValue("@id_tipo", inmueble.Tipo.id_tipo);
-                    command.Parameters.AddWithValue("@id_inmueble", inmueble.IdInmueble);
+                    command.Parameters.AddWithValue("@id_inmueble", inmueble.id_inmueble);
 
                     connection.Open();
                     res = command.ExecuteNonQuery(); // devuelve filas afectadas
@@ -142,7 +142,7 @@ namespace InmobiliariaMVC.Models
             Inmueble? inmueble = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambientes, i.precio, i.estado,
+                string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambiente, i.precio, i.habilitado,
                                       p.id_propietario, p.apellido, p.nombre,
                                       t.id_tipo, t.nombre AS TipoNombre
                                FROM inmueble i
@@ -160,12 +160,12 @@ namespace InmobiliariaMVC.Models
                         {
                             inmueble = new Inmueble
                             {
-                                IdInmueble = reader.GetInt32("id_inmueble"),
-                                Direccion = reader.GetString("direccion"),
-                                Uso = reader.GetString("uso"),
-                                Ambientes = reader.GetInt32("ambientes"),
-                                Precio = reader.GetDecimal("precio"),
-                                Estado = reader.GetBoolean("estado"),
+                                id_inmueble = reader.GetInt32("id_inmueble"),
+                                direccion = reader.GetString("direccion"),
+                                uso = reader.GetString("uso"),
+                                ambiente = reader.GetInt32("ambiente"),
+                                precio = reader.GetDecimal("precio"),
+                                estado = reader.GetBoolean("habilitado"),
                                 Propietario = new Propietario
                                 {
                                     id_propietario = reader.GetInt32("id_propietario"),
@@ -188,7 +188,7 @@ namespace InmobiliariaMVC.Models
            {
             using (var connection = new MySqlConnection(connectionString))
             {
-        string sql = "UPDATE inmueble SET estado = 'activo' WHERE id_inmueble = @id;";
+        string sql = "UPDATE inmueble SET habilitado = '1' WHERE id_inmueble = @id;";
         using (var command = new MySqlCommand(sql, connection))
         {
             command.Parameters.AddWithValue("@id", id);
