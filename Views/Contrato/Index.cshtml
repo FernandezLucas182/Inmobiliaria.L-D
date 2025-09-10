@@ -31,7 +31,16 @@
             <td>@item.MontoMensual</td>
             <td>@item.FechaInicio.ToShortDateString()</td>
             <td>@item.FechaFin.ToShortDateString()</td>
-            <td>@item.Estado</td>
+            <td>
+                @if (item.Estado == true)
+                {
+                    <span class="badge bg-success">Activo</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Inactivo</span>
+                }
+            </td>
             <td>
 
                 <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
