@@ -45,7 +45,7 @@
             </td>
             <td>
                 <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.id_inmueble">Editar</a>
-
+                <a asp-action="Details" asp-route-id="@item.id_inmueble" class="btn btn-sm btn-info">Detalles</a>
                 <form asp-action="ToggleEstado" method="post" style="display:inline">
                     <input type="hidden" name="id" value="@item.id_inmueble" />
                     @if (item.estado == true)

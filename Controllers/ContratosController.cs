@@ -6,7 +6,7 @@ namespace InmobiliariaMVC.Controllers
     public class ContratoController : Controller
     {
         private readonly ContratoRepositorio repoContrato = new ContratoRepositorio();
-       
+
 
         // GET: Contrato
         public IActionResult Index()
@@ -123,6 +123,16 @@ namespace InmobiliariaMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Delete), new { id });
+        }
+
+        public IActionResult Details(int id)
+        {
+            var contrato = repoContrato.ObtenerPorId(id);
+            if (contrato == null)
+            {
+                return NotFound();
+            }
+            return View(contrato);
         }
     }
 }
