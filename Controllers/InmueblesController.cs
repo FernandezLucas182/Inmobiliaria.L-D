@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace InmobiliariaMVC.Controllers
@@ -8,7 +9,7 @@ namespace InmobiliariaMVC.Controllers
     {
         private readonly InmuebleRepositorio repositorio = new InmuebleRepositorio();
 
-        
+
 
         // GET: Inmueble
         public IActionResult Index()
@@ -57,12 +58,30 @@ namespace InmobiliariaMVC.Controllers
 
         // GET: Inmueble/Edit/5
         public IActionResult Edit(int id)
-         {
+        {
             var inmueble = repositorio.ObtenerPorId(id);
             if (inmueble == null)
             {
                 return NotFound();
             }
+
+            var repoPropietario = new PropietarioRepositorio();
+            var repoTipo = new TipoRepositorio();
+
+            ViewBag.Propietarios = new SelectList(
+                repoPropietario.ObtenerTodos(),
+                "id_propietario",
+                "nombre",
+                inmueble.Propietario?.id_propietario
+            );
+
+            ViewBag.Tipos = new SelectList(
+                repoTipo.ObtenerTodos(),
+                "id_tipo",
+                "nombre",
+                inmueble.Tipo?.id_tipo
+            );
+
             return View(inmueble);
         }
 
@@ -84,8 +103,28 @@ namespace InmobiliariaMVC.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
+
+            // Si falla la validación o no se guardó, recargamos los combos
+            var repoPropietario = new PropietarioRepositorio();
+            var repoTipo = new TipoRepositorio();
+
+            ViewBag.Propietarios = new SelectList(
+                repoPropietario.ObtenerTodos(),
+                "id_propietario",
+                "nombre",
+                inmueble.Propietario?.id_propietario
+            );
+
+            ViewBag.Tipos = new SelectList(
+                repoTipo.ObtenerTodos(),
+                "id_tipo",
+                "nombre",
+                inmueble.Tipo?.id_tipo
+            );
+
             return View(inmueble);
         }
+
 
         // GET: Inmueble/Delete/5
         public IActionResult Delete(int id)

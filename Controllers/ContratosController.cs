@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 namespace InmobiliariaMVC.Controllers
 {
     public class ContratoController : Controller
     {
         private readonly ContratoRepositorio repoContrato = new ContratoRepositorio();
-        private readonly InmuebleRepositorio repoInmueble = new InmuebleRepositorio();
-        private readonly InquilinoRepositorio repoInquilino = new InquilinoRepositorio();
+       
 
         // GET: Contrato
         public IActionResult Index()
@@ -16,13 +15,15 @@ namespace InmobiliariaMVC.Controllers
             return View(lista);
         }
 
-    
+
         // GET: Contrato/Create
-        public IActionResult Alta()
+        public IActionResult Create()
         {
-            // Para llenar los combos
-            ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
-            ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
+            var repoInmueble = new InmuebleRepositorio();
+            var repoInquilino = new InquilinoRepositorio();
+
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre");
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
 
             return View();
         }
@@ -41,9 +42,12 @@ namespace InmobiliariaMVC.Controllers
                 }
             }
 
-            // Si falla, recargar combos
-            ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
-            ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
+            // recargo listas si vuelve por error
+            var repoInmueble = new InmuebleRepositorio();
+            var repoInquilino = new InquilinoRepositorio();
+
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre");
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
 
             return View(contrato);
         }
@@ -57,8 +61,12 @@ namespace InmobiliariaMVC.Controllers
                 return NotFound();
             }
 
-            ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
-            ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
+            var repoInmueble = new InmuebleRepositorio();
+            var repoInquilino = new InquilinoRepositorio();
+
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.InmuebleId);
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.InquilinoId);
+
 
             return View(contrato);
         }
@@ -82,11 +90,16 @@ namespace InmobiliariaMVC.Controllers
                 }
             }
 
-            ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
-            ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
+            // recargo listas si hay error
+            var repoInmueble = new InmuebleRepositorio();
+            var repoInquilino = new InquilinoRepositorio();
+
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.InmuebleId);
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.InquilinoId);
 
             return View(contrato);
         }
+
 
         // GET: Contrato/Delete/5
         public IActionResult Delete(int id)

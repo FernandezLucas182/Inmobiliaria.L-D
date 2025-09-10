@@ -127,7 +127,7 @@ namespace InmobiliariaMVC.Models
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "DELETE FROM contrato WHERE id_inquilino=@id;";
+                string sql = "DELETE FROM contrato WHERE id_contrato=@id;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -144,7 +144,7 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
 
             {
-                string sql = @"c.id_contrato, c.id_inquilino, c.id_inmueble, c.monto, 
+                string sql = @"SELECT c.id_contrato, c.id_inquilino, c.id_inmueble, c.monto, 
                             c.fecha_desde, c.fecha_hasta, c.estado,
                             i.id_inquilino, i.nombre AS InquilinoNombre, 
                             inm.id_inmueble, inm.direccion AS InmuebleDireccion, inm.id_tipo, inm.id_propietario,
@@ -154,7 +154,8 @@ namespace InmobiliariaMVC.Models
                        INNER JOIN inquilino i ON c.id_inquilino = i.id_inquilino
                        INNER JOIN inmueble inm ON c.id_inmueble = inm.id_inmueble
                        INNER JOIN tipo t ON inm.id_tipo = t.id_tipo
-                       INNER JOIN propietario p ON inm.id_propietario = p.id_propietario";
+                       INNER JOIN propietario p ON inm.id_propietario = p.id_propietario
+                       WHERE c.id_contrato = @id";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
