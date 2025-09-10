@@ -1,0 +1,31 @@
+@model InmobiliariaMVC.Models.Contrato
+
+@{
+    ViewData["Title"] = "Detalles del Contrato";
+}
+
+<h2>Detalles del Contrato</h2>
+
+<div class="card p-3">
+    <dl class="row">
+        <dt class="col-sm-3">Inquilino</dt>
+        <dd class="col-sm-9">@Model.Inquilino?.nombre</dd>
+
+        <dt class="col-sm-3">Inmueble</dt>
+        <dd class="col-sm-9">@Model.Inmueble?.direccion</dd>
+
+        <dt class="col-sm-3">Monto Mensual</dt>
+        <dd class="col-sm-9">@Model.MontoMensual</dd>
+
+        <dt class="col-sm-3">Fecha Inicio</dt>
+        <dd class="col-sm-9">@Model.FechaInicio.ToShortDateString()</dd>
+
+        <dt class="col-sm-3">Fecha Fin</dt>
+        <dd class="col-sm-9">@Model.FechaFin.ToShortDateString()</dd>
+
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">@(Model.Estado ? "Activo" : "Inactivo")</dd>
+    </dl>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Volver</a>
