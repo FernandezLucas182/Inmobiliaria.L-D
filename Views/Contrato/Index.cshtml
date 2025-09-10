@@ -32,10 +32,14 @@
             <td>@item.FechaInicio.ToShortDateString()</td>
             <td>@item.FechaFin.ToShortDateString()</td>
             <td>@item.Estado</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
-                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            <td>        
+                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Seguro que desear borrar este contrato?');">
+                        Eliminar
+                    </button>
+                </form>
             </td>
         </tr>
 }

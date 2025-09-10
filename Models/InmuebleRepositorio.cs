@@ -12,8 +12,9 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambiente, i.precio, i.habilitado,
-                                      p.id_propietario, p.apellido, p.nombre,
-                                      t.id_tipo, t.nombre AS TipoNombre
+                                      p.id_propietario, p.apellido, p.nombre AS proNombre,
+                                      
+                                      t.id_tipo, t.nombre AS tipoNombre
                                FROM inmueble i
                                INNER JOIN propietario p ON i.id_propietario = p.id_propietario
                                INNER JOIN tipo t ON i.id_tipo = t.id_tipo;";
@@ -37,12 +38,12 @@ namespace InmobiliariaMVC.Models
                                 {
                                     id_propietario = reader.GetInt32("id_Propietario"),
                                     apellido = reader.GetString("apellido"),
-                                    nombre = reader.GetString("nombre")
+                                    nombre = reader.GetString("proNombre")
                                 },
                                 Tipo = new Tipo
                                 {
                                     id_tipo = reader.GetInt32("id_tipo"),
-                                    nombre = reader.GetString("nombre")
+                                    nombre = reader.GetString("tipoNombre")
 
                                 }
 
@@ -64,7 +65,7 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE inmueble 
-                               SET estado = 'false'
+                               SET habilitado = 'false'
                                WHERE id_inmueble = @id;";
 
                 using (var command = new MySqlCommand(sql, connection))
@@ -84,7 +85,7 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO inmueble (direccion, uso, ambiente, precio, habilitado, id_propietario, id_tipo)
-                               VALUES (@direccion, @uso, @ambiente, @precio, @estado, @id_propietario, @id_tipo);
+                               VALUES (@direccion, @uso, @ambiente, @precio, @habilitado, @id_propietario, @id_tipo);
                                SELECT LAST_INSERT_ID();";
 
                 using (var command = new MySqlCommand(sql, connection))
@@ -143,8 +144,8 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambiente, i.precio, i.habilitado,
-                                      p.id_propietario, p.apellido, p.nombre,
-                                      t.id_tipo, t.nombre AS TipoNombre
+                                      p.id_propietario, p.apellido, p.nombre AS proNombre,
+                                      t.id_tipo, t.nombre AS tipoNombre
                                FROM inmueble i
                                INNER JOIN propietario p ON i.id_propietario = p.id_propietario
                                INNER JOIN tipo t ON i.id_tipo = t.id_tipo
@@ -170,12 +171,12 @@ namespace InmobiliariaMVC.Models
                                 {
                                     id_propietario = reader.GetInt32("id_propietario"),
                                     apellido = reader.GetString("apellido"),
-                                    nombre = reader.GetString("nombre")
+                                    nombre = reader.GetString("proNombre")
                                 },
                                 Tipo = new Tipo
                                 {
                                     id_tipo = reader.GetInt32("id_tipo"),
-                                    nombre = reader.GetString("nombre")
+                                    nombre = reader.GetString("tipoNombre")
                                 }
                             };
                         }
