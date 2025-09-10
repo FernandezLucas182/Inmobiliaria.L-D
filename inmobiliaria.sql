@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-09-2025 a las 01:18:22
+-- Tiempo de generación: 10-09-2025 a las 05:37:33
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -32,12 +32,20 @@ CREATE TABLE `contrato` (
   `id_inquilino` int(11) NOT NULL,
   `id_inmueble` int(11) NOT NULL,
   `monto` int(11) NOT NULL,
-  `feche_desde` date NOT NULL,
+  `fecha_desde` date NOT NULL,
   `fecha_hasta` date NOT NULL,
   `fecha_fin_anticipada` date DEFAULT NULL,
   `multa` int(11) DEFAULT NULL,
-  `meses_adeudado` int(11) NOT NULL
+  `meses_adeudado` int(11) DEFAULT NULL,
+  `estado` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `contrato`
+--
+
+INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `fecha_fin_anticipada`, `multa`, `meses_adeudado`, `estado`) VALUES
+(2, 1, 1, 450000, '2025-09-18', '2025-10-31', NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -59,6 +67,15 @@ CREATE TABLE `inmueble` (
   `latitud` int(11) NOT NULL,
   `imagen` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `inmueble`
+--
+
+INSERT INTO `inmueble` (`id_inmueble`, `id_propietario`, `id_tipo`, `nombre`, `ambiente`, `precio`, `habilitado`, `direccion`, `uso`, `longitud`, `latitud`, `imagen`) VALUES
+(1, 3, 1, '', 4, 2500000, 1, 'Eva Peron', 'Residencial', 0, 0, ''),
+(2, 4, 2, '', 6, 689870, 1, 'B Cerro de la cruz', 'Residencial', 0, 0, ''),
+(3, 3, 2, '', 6, 56453, 1, 'B Jardin', 'Comercial', 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -219,13 +236,13 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
