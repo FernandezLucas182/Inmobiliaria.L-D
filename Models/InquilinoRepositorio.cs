@@ -68,7 +68,7 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT id_inquilino, dni, nombre, apellido, telefono, email
-                               FROM inquilino WHERE Id = @id_inquilino;";
+                               FROM inquilino WHERE id_inquilino= @id_inquilino;";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@id_inquilino", id);
@@ -99,7 +99,7 @@ namespace InmobiliariaMVC.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE inquilino 
-                               SET Dni = @dni, nombre = @nombre, apellido = @apellido,
+                               SET dni = @dni, nombre = @nombre, apellido = @apellido,
                                    telefono = @telefono, email = @email
                                WHERE id_inquilino = @id_inquilino;";
                 using (var command = new MySqlCommand(sql, connection))
