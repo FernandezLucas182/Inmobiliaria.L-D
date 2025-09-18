@@ -9,12 +9,12 @@ namespace InmobiliariaMVC.Models
         // 📌 Alta (Insertar)
         public int Alta(Inquilino inquilino)
         {
-            int res = -1;
+            int idInsertado = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO inquilino (dni, nombre, apellido, telefono, email)
-                               VALUES (@dni, @nombreCompleto, @telefono, @email);
-                               SELECT LAST_INSERT_ID();";
+                       VALUES (@dni, @nombre, @apellido, @telefono, @email);
+                       SELECT LAST_INSERT_ID();";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@dni", inquilino.dni);
@@ -22,14 +22,15 @@ namespace InmobiliariaMVC.Models
                     command.Parameters.AddWithValue("@apellido", inquilino.apellido);
                     command.Parameters.AddWithValue("@telefono", inquilino.telefono ?? "");
                     command.Parameters.AddWithValue("@email", inquilino.email ?? "");
+
                     connection.Open();
-                    res = Convert.ToInt32(command.ExecuteScalar());
-                    inquilino.id_inquilino = res;
-                    connection.Close();
+                    idInsertado = Convert.ToInt32(command.ExecuteScalar());
+                    inquilino.id_inquilino = idInsertado;
                 }
             }
-            return res;
+            return idInsertado;
         }
+
 
         // 📌 Obtener Todos
         public IList<Inquilino> ObtenerTodos()
@@ -46,7 +47,7 @@ namespace InmobiliariaMVC.Models
                     {
                         var i = new Inquilino
                         {
-                            id_inquilino= reader.GetInt32("id_inquilino"),
+                            id_inquilino = reader.GetInt32("id_inquilino"),
                             dni = reader.GetString("dni"),
                             nombre = reader.GetString("nombre"),
                             apellido = reader.GetString("apellido"),
@@ -112,7 +113,6 @@ namespace InmobiliariaMVC.Models
                     command.Parameters.AddWithValue("@id_inquilino", inquilino.id_inquilino);
                     connection.Open();
                     res = command.ExecuteNonQuery();
-                    connection.Close();
                 }
             }
             return res;
