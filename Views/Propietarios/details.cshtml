@@ -1,0 +1,43 @@
+@model InmobiliariaMVC.Models.Propietario
+
+
+@{
+    ViewBag.Title = "Detalle de Propietario";
+}
+
+
+<h2>Detalle de Propietario</h2>
+
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Id</dt>
+            <dd class="col-sm-9">@Model.id_propietario</dd>
+
+
+            <dt class="col-sm-3">DNI</dt>
+            <dd class="col-sm-9">@Model.dni</dd>
+
+
+            <dt class="col-sm-3">Apellido</dt>
+            <dd class="col-sm-9">@Model.apellido</dd>
+
+
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.nombre</dd>
+
+
+            <dt class="col-sm-3">Teléfono</dt>
+            <dd class="col-sm-9">@Model.telefono</dd>
+
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.email</dd>
+        </dl>
+
+
+        <a asp-action="Edit" asp-route-id="@Model.id_propietario" class="btn btn-secondary">Editar</a>
+        <a asp-action="Index" class="btn btn-primary">Volver</a>
+    </div>
+</div>

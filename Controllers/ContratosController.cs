@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
+
 namespace InmobiliariaMVC.Controllers
 {
     public class ContratoController : Controller
     {
         private readonly ContratoRepositorio repoContrato = new ContratoRepositorio();
-
+        private readonly InmuebleRepositorio repoInmueble = new InmuebleRepositorio();
+        private readonly InquilinoRepositorio repoInquilino = new InquilinoRepositorio();
 
         // GET: Contrato
         public IActionResult Index()
@@ -15,16 +18,19 @@ namespace InmobiliariaMVC.Controllers
             return View(lista);
         }
 
+        // GET: Contrato/Details/5
+        public IActionResult Details(int id)
+        {
+            var contrato = repoContrato.ObtenerPorId(id);
+            if (contrato == null) return NotFound();
+            return View(contrato);
+        }
 
         // GET: Contrato/Create
         public IActionResult Create()
         {
-            var repoInmueble = new InmuebleRepositorio();
-            var repoInquilino = new InquilinoRepositorio();
-
             ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre");
             ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
-
             return View();
         }
 
@@ -35,20 +41,14 @@ namespace InmobiliariaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var filas = repoContrato.Alta(contrato);
-                if (filas > 0)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                var filas = repoContrato.Alta(contrato, userId);
+                if (filas > 0) return RedirectToAction(nameof(Index));
             }
 
-            // recargo listas si vuelve por error
-            var repoInmueble = new InmuebleRepositorio();
-            var repoInquilino = new InquilinoRepositorio();
-
-            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre");
-            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
-
+            // recargo listas si hay error
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.id_inquilino);
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
             return View(contrato);
         }
 
@@ -56,18 +56,10 @@ namespace InmobiliariaMVC.Controllers
         public IActionResult Edit(int id)
         {
             var contrato = repoContrato.ObtenerPorId(id);
-            if (contrato == null)
-            {
-                return NotFound();
-            }
+            if (contrato == null) return NotFound();
 
-            var repoInmueble = new InmuebleRepositorio();
-            var repoInquilino = new InquilinoRepositorio();
-
-            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.InmuebleId);
-            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.InquilinoId);
-
-
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.id_inquilino);
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
             return View(contrato);
         }
 
@@ -76,39 +68,25 @@ namespace InmobiliariaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Contrato contrato)
         {
-            if (id != contrato.Id)
-            {
-                return BadRequest();
-            }
+            if (id != contrato.id_contrato) return BadRequest();
 
             if (ModelState.IsValid)
             {
                 var filas = repoContrato.Modificacion(contrato);
-                if (filas > 0)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+                if (filas > 0) return RedirectToAction(nameof(Index));
             }
 
             // recargo listas si hay error
-            var repoInmueble = new InmuebleRepositorio();
-            var repoInquilino = new InquilinoRepositorio();
-
-            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.InmuebleId);
-            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.InquilinoId);
-
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.id_inquilino);
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
             return View(contrato);
         }
-
 
         // GET: Contrato/Delete/5
         public IActionResult Delete(int id)
         {
             var contrato = repoContrato.ObtenerPorId(id);
-            if (contrato == null)
-            {
-                return NotFound();
-            }
+            if (contrato == null) return NotFound();
             return View(contrato);
         }
 
@@ -118,21 +96,18 @@ namespace InmobiliariaMVC.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var filas = repoContrato.Baja(id);
-            if (filas > 0)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            if (filas > 0) return RedirectToAction(nameof(Index));
             return RedirectToAction(nameof(Delete), new { id });
         }
 
-        public IActionResult Details(int id)
+        // POST: Contrato/Terminar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Terminar(int id)
         {
-            var contrato = repoContrato.ObtenerPorId(id);
-            if (contrato == null)
-            {
-                return NotFound();
-            }
-            return View(contrato);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+            repoContrato.TerminarContrato(id, userId);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

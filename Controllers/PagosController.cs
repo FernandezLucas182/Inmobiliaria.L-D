@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
+using System.Security.Claims;
 
 namespace InmobiliariaMVC.Controllers
 {
@@ -19,10 +20,7 @@ namespace InmobiliariaMVC.Controllers
         public IActionResult Details(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
-            if (pago == null)
-            {
-                return NotFound();
-            }
+            if (pago == null) return NotFound();
             return View(pago);
         }
 
@@ -40,9 +38,11 @@ namespace InmobiliariaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                repoPago.Alta(pago);
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                repoPago.Alta(pago, userId);
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.Contratos = repoContrato.ObtenerTodos();
             return View(pago);
         }
@@ -51,10 +51,8 @@ namespace InmobiliariaMVC.Controllers
         public IActionResult Edit(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
-            if (pago == null)
-            {
-                return NotFound();
-            }
+            if (pago == null) return NotFound();
+
             ViewBag.Contratos = repoContrato.ObtenerTodos();
             return View(pago);
         }
@@ -64,16 +62,14 @@ namespace InmobiliariaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Pago pago)
         {
-            if (id != pago.id_pago)
-            {
-                return BadRequest();
-            }
+            if (id != pago.id_pago) return BadRequest();
 
             if (ModelState.IsValid)
             {
                 repoPago.Modificacion(pago);
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.Contratos = repoContrato.ObtenerTodos();
             return View(pago);
         }
@@ -82,10 +78,7 @@ namespace InmobiliariaMVC.Controllers
         public IActionResult Delete(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
-            if (pago == null)
-            {
-                return NotFound();
-            }
+            if (pago == null) return NotFound();
             return View(pago);
         }
 

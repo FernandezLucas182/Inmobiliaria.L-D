@@ -8,46 +8,46 @@
 
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="InquilinoId" class="control-label">Inquilino</label>
-        <select asp-for="InquilinoId" class="form-control" asp-items="ViewBag.Inquilinos">
+        <label asp-for="id_inquilino" class="control-label">Inquilino</label>
+        <select asp-for="id_inquilino" class="form-control" asp-items="ViewBag.Inquilinos">
             <option value="">-- Seleccionar Inquilino --</option>
         </select>
-        <span asp-validation-for="InquilinoId" class="text-danger"></span>
+        <span asp-validation-for="id_inquilino" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="InmuebleId" class="control-label">Inmueble</label>
-        <select asp-for="InmuebleId" class="form-control" asp-items="ViewBag.Inmuebles">
+        <label asp-for="id_inmueble" class="control-label">Inmueble</label>
+        <select asp-for="id_inmueble" class="form-control" asp-items="ViewBag.Inmuebles">
             <option value="">-- Seleccionar Inmueble --</option>
         </select>
-        <span asp-validation-for="InmuebleId" class="text-danger"></span>
+        <span asp-validation-for="id_inmueble" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="MontoMensual" class="control-label"></label>
-        <input asp-for="MontoMensual" class="form-control" />
-        <span asp-validation-for="MontoMensual" class="text-danger"></span>
+        <label asp-for="monto" class="control-label"></label>
+        <input asp-for="monto" class="form-control" />
+        <span asp-validation-for="monto" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="FechaInicio" class="control-label"></label>
-        <input asp-for="FechaInicio" type="date" class="form-control" />
-        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+        <label asp-for="fecha_inicio" class="control-label"></label>
+        <input asp-for="fecha_inicio" type="date" class="form-control" />
+        <span asp-validation-for="fecha_inicio" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="FechaFin" class="control-label"></label>
-        <input asp-for="FechaFin" type="date" class="form-control" />
-        <span asp-validation-for="FechaFin" class="text-danger"></span>
+        <label asp-for="fecha_fin" class="control-label"></label>
+        <input asp-for="fecha_fin" type="date" class="form-control" />
+        <span asp-validation-for="fecha_fin" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Estado" class="control-label"></label>
-        <select asp-for="Estado" class="form-control">
+        <label asp-for="estado" class="control-label"></label>
+        <select asp-for="estado" class="form-control">
             <option value="true">Activo</option>
             <option value="false">Inactivo</option>
         </select>
-        <span asp-validation-for="Estado" class="text-danger"></span>
+        <span asp-validation-for="estado" class="text-danger"></span>
     </div>
     
     <button type="submit" class="btn btn-primary">Guardar</button>

@@ -2,8 +2,39 @@
     ViewData["Title"] = "FelFer Inmobiliaria";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Bienvenidos a Inmobiliaria FelFer</h1>
-    <img src="~/images/logo.jpeg" alt="Logo de la página" width="1000">;
-    
+<div class="text-center mt-5">
+    <h1 class="display-4 fw-bold">Bienvenidos a Inmobiliaria FelFer</h1>
+    <p class="lead mb-4">Tu confianza, nuestro compromiso.</p>
+
+    <img src="~/images/logo.jpeg" alt="Logo de la página" class="img-fluid rounded shadow-sm" style="max-width: 400px;" />
+</div>
+
+<div class="row mt-5 justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body text-center">
+                <h5 class="card-title">Propietarios</h5>
+                <p class="card-text">Gestiona tus propiedades de manera fácil y segura.</p>
+                <a asp-controller="Propietarios" asp-action="Index" class="btn btn-primary">Ver Propietarios</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body text-center">
+                <h5 class="card-title">Inquilinos</h5>
+                <p class="card-text">Accede a la información de tus inquilinos rápidamente.</p>
+                <a asp-controller="Inquilinos" asp-action="Index" class="btn btn-primary">Ver Inquilinos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body text-center">
+                <h5 class="card-title">Contratos</h5>
+                <p class="card-text">Administra tus contratos de manera eficiente.</p>
+                <a asp-controller="Contrato" asp-action="Index" class="btn btn-primary">Ver Contratos</a>
+            </div>
+        </div>
+    </div>
 </div>
