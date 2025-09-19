@@ -1,0 +1,35 @@
+@model IEnumerable<InmobiliariaMVC.Models.Usuario>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+<h2>Usuarios</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <p><a class="btn btn-primary" asp-action="Create">Nuevo Usuario</a></p>
+}
+
+<table class="table">
+    <thead>
+        <tr><th>Apellido</th><th>Nombre</th><th>Email</th><th>Rol</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach(var u in Model)
+        {
+            <tr>
+                <td>@u.apellido</td>
+                <td>@u.nombre</td>
+                <td>@u.email</td>
+                <td>@u.rol</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@u.id_usuario" class="btn btn-sm btn-info">Ver</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@u.id_usuario" class="btn btn-sm btn-secondary">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@u.id_usuario" class="btn btn-sm btn-danger">Eliminar</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

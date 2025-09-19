@@ -1,0 +1,39 @@
+@model InmobiliariaMVC.Models.Usuario
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<h2>Mi Perfil</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@(Model.avatar_path ?? "/images/default-avatar.png")" class="img-thumbnail" />
+        <form asp-action="DeleteAvatar" method="post" class="mt-2">
+            <button class="btn btn-danger btn-sm">Eliminar avatar</button>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <form asp-action="Profile" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Nombre</label>
+                <input asp-for="nombre" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Apellido</label>
+                <input asp-for="apellido" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Avatar</label>
+                <input type="file" name="avatarFile" class="form-control" />
+            </div>
+            <button class="btn btn-primary">Guardar</button>
+        </form>
+
+        <hr />
+        <a class="btn btn-secondary" asp-action="ChangePassword">Cambiar contraseña</a>
+    </div>
+</div>

@@ -28,11 +28,11 @@
         <tr>
             <td>@item.Inquilino?.nombre</td>
             <td>@item.Inmueble?.direccion</td>
-            <td>@item.MontoMensual</td>
-            <td>@item.FechaInicio.ToShortDateString()</td>
-            <td>@item.FechaFin.ToShortDateString()</td>
+            <td>@item.monto</td>
+            <td>@item.fecha_inicio.ToShortDateString()</td>
+            <td>@item.fecha_fin.ToShortDateString()</td>
             <td>
-                @if (item.Estado == true)
+                @if (item.estado == true)
                 {
                     <span class="badge bg-success">Activo</span>
                 }
@@ -43,9 +43,9 @@
             </td>
             <td>
 
-                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detalles</a>
-                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.id_contrato">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.id_contrato" class="btn btn-sm btn-info">Detalles</a>
+                <form asp-action="Delete" asp-route-id="@item.id_contrato" method="post" style="display:inline">
                     <button type="submit" class="btn btn-danger btn-sm"
                             onclick="return confirm('¿Seguro que desear borrar este contrato?');">
                         Eliminar

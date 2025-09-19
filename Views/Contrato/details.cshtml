@@ -15,16 +15,16 @@
         <dd class="col-sm-9">@Model.Inmueble?.direccion</dd>
 
         <dt class="col-sm-3">Monto Mensual</dt>
-        <dd class="col-sm-9">@Model.MontoMensual</dd>
+        <dd class="col-sm-9">@Model.monto</dd>
 
         <dt class="col-sm-3">Fecha Inicio</dt>
-        <dd class="col-sm-9">@Model.FechaInicio.ToShortDateString()</dd>
+        <dd class="col-sm-9">@Model.fecha_inicio.ToShortDateString()</dd>
 
         <dt class="col-sm-3">Fecha Fin</dt>
-        <dd class="col-sm-9">@Model.FechaFin.ToShortDateString()</dd>
+        <dd class="col-sm-9">@Model.fecha_fin.ToShortDateString()</dd>
 
         <dt class="col-sm-3">Estado</dt>
-        <dd class="col-sm-9">@(Model.Estado ? "Activo" : "Inactivo")</dd>
+        <dd class="col-sm-9">@(Model.estado ? "Activo" : "Inactivo")</dd>
     </dl>
 </div>
 
