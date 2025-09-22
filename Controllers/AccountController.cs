@@ -83,38 +83,93 @@ namespace InmobiliariaMVC.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Profile(Usuario model, IFormFile avatarFile)
+        [Authorize]
+        [HttpPost]
+        public IActionResult Profile(
+    Usuario model,
+    IFormFile avatarFile,
+    bool EliminarAvatar = false,
+    string? currentPassword = null,
+    string? newPassword = null,
+    string? newPasswordConfirm = null)
         {
             var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
             if (user == null) return NotFound();
 
-            // solo permitir editar ciertos campos (no rol, no password)
+            // actualizar datos básicos
             user.nombre = model.nombre;
             user.apellido = model.apellido;
             user.email = model.email;
 
-            // avatar upload
+            // eliminar avatar si se marcó
+            if (EliminarAvatar && !string.IsNullOrEmpty(user.avatar_path))
+            {
+                var physical = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/', '\\'));
+                if (System.IO.File.Exists(physical)) System.IO.File.Delete(physical);
+                user.avatar_path = null;
+            }
+
+            // subir nuevo avatar con validaciones
             if (avatarFile != null && avatarFile.Length > 0)
             {
+                var ext = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
+                var allowedExt = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                const long maxSize = 2 * 1024 * 1024; // 2 MB
+
+                if (!allowedExt.Contains(ext))
+                {
+                    ModelState.AddModelError("", "Solo se permiten imágenes (.jpg, .jpeg, .png, .gif).");
+                    return View(user);
+                }
+
+                if (avatarFile.Length > maxSize)
+                {
+                    ModelState.AddModelError("", "El tamaño máximo del avatar es 2 MB.");
+                    return View(user);
+                }
+
                 var uploads = Path.Combine(_env.WebRootPath, "uploads", "avatars");
                 if (!Directory.Exists(uploads)) Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(avatarFile.FileName)}";
+
+                var fileName = $"{Guid.NewGuid()}{ext}";
                 var filePath = Path.Combine(uploads, fileName);
+
                 using var fs = new FileStream(filePath, FileMode.Create);
                 avatarFile.CopyTo(fs);
-                // elimina avatar anterior si existe
+
+                // eliminar avatar anterior si existe
                 if (!string.IsNullOrEmpty(user.avatar_path))
                 {
                     var old = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/', '\\'));
                     if (System.IO.File.Exists(old)) System.IO.File.Delete(old);
                 }
+
                 user.avatar_path = $"/uploads/avatars/{fileName}";
+            }
+
+            // cambiar contraseña si se ingresó
+            if (!string.IsNullOrEmpty(currentPassword) && !string.IsNullOrEmpty(newPassword) && !string.IsNullOrEmpty(newPasswordConfirm))
+            {
+                var verify = _pwdHasher.VerifyHashedPassword(user, user.password_hash, currentPassword);
+                if (verify != PasswordVerificationResult.Success)
+                {
+                    ModelState.AddModelError("", "Contraseña actual incorrecta.");
+                    return View(user);
+                }
+                if (newPassword != newPasswordConfirm)
+                {
+                    ModelState.AddModelError("", "La nueva contraseña y su confirmación no coinciden.");
+                    return View(user);
+                }
+
+                user.password_hash = _pwdHasher.HashPassword(user, newPassword);
             }
 
             _repo.Update(user);
             return RedirectToAction("Profile");
         }
+
 
         [Authorize]
         [HttpPost]
@@ -167,7 +222,7 @@ namespace InmobiliariaMVC.Controllers
         [AllowAnonymous]
         public IActionResult AccessDenied() => View();
 
-        
+
         /*   public IActionResult CrearAdmin()
            {
                var user = new Usuario

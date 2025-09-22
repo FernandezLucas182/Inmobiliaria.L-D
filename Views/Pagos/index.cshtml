@@ -35,7 +35,13 @@
             <td>
                 <a class="btn btn-sm btn-secondary" asp-action="Edit" asp-route-id="@item.id_pago">Editar</a>
                 <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.id_pago">Ver</a>
-                <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.id_pago">Eliminar</a>
+
+                @if (item.estado)
+                {
+                    <form asp-action="CancelarConfirmed" asp-route-id="@item.id_pago" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-warning">Anular Pago</button>
+                    </form>
+                }
             </td>
         </tr>
     }
