@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,50 +11,56 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InmobiliariaMVC.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top" />
+                    <img src="~/images/logo.png" alt="Logo" width="30" height="30"
+                        class="d-inline-block align-text-top" />
                     FelFer
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Inicio</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
+                                asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacidad</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
+                                asp-action="Privacy">Privacidad</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Propietarios" asp-action="Index">Propietarios</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Propietarios"
+                                asp-action="Index">Propietarios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Inquilinos" asp-action="Index">Inquilinos</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Inquilinos"
+                                asp-action="Index">Inquilinos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Inmueble" asp-action="Index">Inmuebles</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Inmueble"
+                                asp-action="Index">Inmuebles</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Contrato" asp-action="Index">Contratos</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Contrato"
+                                asp-action="Index">Contrato</a>
                         </li>
 
-                        @if (User.Identity?.IsAuthenticated == true)
+                        @if (User?.Identity?.IsAuthenticated ?? false)
                         {
-                            @* Solo mostrar Usuarios si es Admin *@
-                            @if (User.IsInRole("Admin"))
+                            if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                                    <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
                                 </li>
                             }
-
                             <li class="nav-item">
                                 <form method="post" asp-controller="Account" asp-action="Logout" style="display:inline;">
                                     <button class="btn btn-link nav-link" type="submit">Cerrar sesión</button>
@@ -63,10 +70,11 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Ingresar</a>
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Ingresar</a>
                             </li>
                         }
                     </ul>
+
                 </div>
             </div>
         </nav>
@@ -89,4 +97,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

@@ -29,8 +29,7 @@ namespace InmobiliariaMVC.Controllers
         // GET: Contrato/Create
         public IActionResult Create()
         {
-            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre");
-            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
+            CargarListas();
             return View();
         }
 
@@ -39,16 +38,28 @@ namespace InmobiliariaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Contrato contrato)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-                var filas = repoContrato.Alta(contrato, userId);
-                if (filas > 0) return RedirectToAction(nameof(Index));
+                CargarListas();
+                return View(contrato);
             }
 
-            // recargo listas si hay error
-            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.id_inquilino);
-            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
+            try
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                repoContrato.Alta(contrato, userId);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Ocurrió un error al crear el contrato.");
+            }
+
+            CargarListas();
             return View(contrato);
         }
 
@@ -60,6 +71,7 @@ namespace InmobiliariaMVC.Controllers
 
             ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.id_inquilino);
             ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
+
             return View(contrato);
         }
 
@@ -72,11 +84,21 @@ namespace InmobiliariaMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                var filas = repoContrato.Modificacion(contrato);
-                if (filas > 0) return RedirectToAction(nameof(Index));
+                try
+                {
+                    var filas = repoContrato.Modificacion(contrato);
+                    if (filas > 0) return RedirectToAction(nameof(Index));
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Ocurrió un error al modificar el contrato.");
+                }
             }
 
-            // recargo listas si hay error
             ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre", contrato.id_inquilino);
             ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
             return View(contrato);
@@ -96,8 +118,7 @@ namespace InmobiliariaMVC.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var filas = repoContrato.Baja(id);
-            if (filas > 0) return RedirectToAction(nameof(Index));
-            return RedirectToAction(nameof(Delete), new { id });
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Contrato/Terminar/5
@@ -108,6 +129,13 @@ namespace InmobiliariaMVC.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             repoContrato.TerminarContrato(id, userId);
             return RedirectToAction(nameof(Index));
+        }
+
+        // Método auxiliar para recargar dropdowns
+        private void CargarListas()
+        {
+            ViewBag.Inquilinos = new SelectList(repoInquilino.ObtenerTodos(), "id_inquilino", "nombre");
+            ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
         }
     }
 }

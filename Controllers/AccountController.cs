@@ -14,6 +14,7 @@ namespace InmobiliariaMVC.Controllers
         private readonly PasswordHasher<Usuario> _pwdHasher = new PasswordHasher<Usuario>();
         private readonly IWebHostEnvironment _env;
 
+
         public AccountController(UsuarioRepositorio repo, IWebHostEnvironment env)
         {
             _repo = repo;
@@ -57,7 +58,7 @@ namespace InmobiliariaMVC.Controllers
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Email o contraseña inválidos.");
@@ -75,7 +76,7 @@ namespace InmobiliariaMVC.Controllers
         [HttpGet]
         public IActionResult Profile()
         {
-            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)?? "0");
+            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
             return View(user);
         }
@@ -84,7 +85,7 @@ namespace InmobiliariaMVC.Controllers
         [HttpPost]
         public IActionResult Profile(Usuario model, IFormFile avatarFile)
         {
-            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)?? "0");
+            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
             if (user == null) return NotFound();
 
@@ -105,7 +106,7 @@ namespace InmobiliariaMVC.Controllers
                 // elimina avatar anterior si existe
                 if (!string.IsNullOrEmpty(user.avatar_path))
                 {
-                    var old = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/','\\'));
+                    var old = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/', '\\'));
                     if (System.IO.File.Exists(old)) System.IO.File.Delete(old);
                 }
                 user.avatar_path = $"/uploads/avatars/{fileName}";
@@ -119,7 +120,7 @@ namespace InmobiliariaMVC.Controllers
         [HttpPost]
         public IActionResult DeleteAvatar()
         {
-            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)?? "0");
+            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
             if (user == null) return NotFound();
 
@@ -142,7 +143,7 @@ namespace InmobiliariaMVC.Controllers
         [HttpPost]
         public IActionResult ChangePassword(string currentPassword, string newPassword, string newPasswordConfirm)
         {
-            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)?? "0");
+            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
             if (user == null) return NotFound();
 
@@ -165,5 +166,26 @@ namespace InmobiliariaMVC.Controllers
 
         [AllowAnonymous]
         public IActionResult AccessDenied() => View();
+
+        
+        /*   public IActionResult CrearAdmin()
+           {
+               var user = new Usuario
+               {
+                   nombre = "Admin",
+                   apellido = "Principal",
+                   email = "admin@inmobiliaria.com",
+                   rol = "Admin"
+               };
+
+               var hasher = new PasswordHasher<Usuario>();
+               user.password_hash = hasher.HashPassword(user, "Admin123!"); // contraseña inicial
+
+               _repo.Create(user); // o el método que uses para guardar
+               return Content("Usuario administrador creado correctamente");
+           }
+       */
     }
 }
+
+

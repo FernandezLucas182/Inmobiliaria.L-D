@@ -1,31 +1,39 @@
 @model InmobiliariaMVC.Models.Contrato
 
 @{
-    ViewData["Title"] = "Detalles del Contrato";
+    ViewData["Title"] = "Detalle del Contrato";
 }
 
-<h2>Detalles del Contrato</h2>
+<h2>Detalle del Contrato</h2>
 
-<div class="card p-3">
-    <dl class="row">
-        <dt class="col-sm-3">Inquilino</dt>
-        <dd class="col-sm-9">@Model.Inquilino?.nombre</dd>
-
-        <dt class="col-sm-3">Inmueble</dt>
-        <dd class="col-sm-9">@Model.Inmueble?.direccion</dd>
-
-        <dt class="col-sm-3">Monto Mensual</dt>
-        <dd class="col-sm-9">@Model.monto</dd>
-
-        <dt class="col-sm-3">Fecha Inicio</dt>
-        <dd class="col-sm-9">@Model.fecha_inicio.ToShortDateString()</dd>
-
-        <dt class="col-sm-3">Fecha Fin</dt>
-        <dd class="col-sm-9">@Model.fecha_fin.ToShortDateString()</dd>
-
-        <dt class="col-sm-3">Estado</dt>
-        <dd class="col-sm-9">@(Model.estado ? "Activo" : "Inactivo")</dd>
-    </dl>
+<div>
+    <strong>Inquilino:</strong> @Model.Inquilino?.nombre @Model.Inquilino?.apellido
+</div>
+<div>
+    <strong>Inmueble:</strong> @Model.Inmueble?.direccion
+</div>
+<div>
+    <strong>Monto:</strong> @Model.monto
+</div>
+<div>
+    <strong>Fecha desde:</strong> @Model.fecha_inicio.ToString("dd/MM/yyyy")
+</div>
+<div>
+    <strong>Fecha hasta:</strong> @Model.fecha_fin.ToString("dd/MM/yyyy")
+</div>
+<div>
+    <strong>Estado:</strong> @(Model.estado ? "Activo" : "Cerrado")
+</div>
+<div>
+    <strong>Creado por:</strong> @Model.CreatedByUser?.nombre @Model.CreatedByUser?.apellido
+</div>
+<div>
+    <strong>Fecha creación:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy")
+</div>
+<div>
+    <strong>Finalizado por:</strong> @Model.ClosedByUser?.nombre @Model.ClosedByUser?.apellido
+</div>
+<div>
+    <strong>Fecha cierre:</strong> @(Model.ClosedAt?.ToString("dd/MM/yyyy") ?? "-")
 </div>
 
-<a asp-action="Index" class="btn btn-secondary mt-3">Volver</a>
