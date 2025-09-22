@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-09-2025 a las 05:37:33
+-- Tiempo de generación: 19-09-2025 a las 22:03:47
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -37,15 +37,20 @@ CREATE TABLE `contrato` (
   `fecha_fin_anticipada` date DEFAULT NULL,
   `multa` int(11) DEFAULT NULL,
   `meses_adeudado` int(11) DEFAULT NULL,
-  `estado` tinyint(1) NOT NULL
+  `estado` tinyint(1) NOT NULL,
+  `CreatedByUserId` int(11) DEFAULT NULL,
+  `CreatedAt` datetime DEFAULT NULL,
+  `ClosedByUserId` int(11) DEFAULT NULL,
+  `ClosedAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `contrato`
 --
 
-INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `fecha_fin_anticipada`, `multa`, `meses_adeudado`, `estado`) VALUES
-(2, 1, 1, 450000, '2025-09-18', '2025-10-31', NULL, NULL, NULL, 1);
+INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `fecha_fin_anticipada`, `multa`, `meses_adeudado`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
+(2, 1, 1, 450000, '2025-09-18', '2025-10-31', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL),
+(3, 3, 1, 450000, '2025-09-26', '2025-09-20', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -73,9 +78,11 @@ CREATE TABLE `inmueble` (
 --
 
 INSERT INTO `inmueble` (`id_inmueble`, `id_propietario`, `id_tipo`, `nombre`, `ambiente`, `precio`, `habilitado`, `direccion`, `uso`, `longitud`, `latitud`, `imagen`) VALUES
-(1, 3, 1, '', 4, 2500000, 1, 'Eva Peron', 'Residencial', 0, 0, ''),
+(1, 4, 1, '', 4, 2500000, 1, 'Eva Peron', 'Residencial', 0, 0, ''),
 (2, 4, 2, '', 6, 689870, 1, 'B Cerro de la cruz', 'Residencial', 0, 0, ''),
-(3, 3, 2, '', 6, 56453, 1, 'B Jardin', 'Comercial', 0, 0, '');
+(3, 3, 2, '', 6, 56453, 1, 'B Jardin', 'Comercial', 0, 0, ''),
+(4, 3, 2, '', 2, 29500, 1, 'Potrero', 'Comercial', 0, 0, ''),
+(5, 3, 2, '', 8, 29500, 1, 'La Punta', 'Comercial', 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -98,7 +105,8 @@ CREATE TABLE `inquilino` (
 
 INSERT INTO `inquilino` (`id_inquilino`, `dni`, `nombre`, `apellido`, `telefono`, `email`) VALUES
 (1, '40111444', 'Juan ', 'Lopez', '2664310294', 'juan.lopez@email.com'),
-(2, '40122555', 'Ana', 'Torres', '294829192', 'ana.torres@email.com');
+(2, '40122555', 'Ana', 'Torres', '294829192', 'ana.torres@email.com'),
+(3, '98372891', 'Matias', 'Perez', '2665209423', 'matiasperez@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -110,10 +118,11 @@ CREATE TABLE `pago` (
   `id_pago` int(11) NOT NULL,
   `id_contrato` int(11) NOT NULL,
   `fecha` date NOT NULL,
-  `importe` int(11) NOT NULL,
+  `importe` decimal(10,2) NOT NULL,
   `nro_pago` int(11) NOT NULL,
-  `estado` tinyint(1) NOT NULL,
-  `detalle` varchar(30) NOT NULL
+  `estado` tinyint(1) DEFAULT 1,
+  `CreatedByUserId` int(11) DEFAULT NULL,
+  `CreatedAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -137,7 +146,8 @@ CREATE TABLE `propietario` (
 
 INSERT INTO `propietario` (`id_propietario`, `dni`, `apellido`, `nombre`, `telefono`, `email`) VALUES
 (3, '2910492', 'Ramirez', 'Juan', '28476391', 'juanramirez@gmail.com'),
-(4, '12365378', 'Davinvi', 'Lucas', '294872o', 'jorge.lucas@gmail.com');
+(4, '12365378', 'Davinvi', 'Lucas', '294872o', 'jorge.lucas@gmail.com'),
+(5, '294890234', 'Mendez', 'Hernan', '266777883', 'hernanmendez@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -166,13 +176,14 @@ INSERT INTO `tipo` (`id_tipo`, `nombre`) VALUES
 
 CREATE TABLE `usuario` (
   `id_usuario` int(11) NOT NULL,
-  `nombre` varchar(30) NOT NULL,
-  `apellido` varchar(30) NOT NULL,
-  `rol` varchar(20) NOT NULL,
-  `email` varchar(20) NOT NULL,
-  `clave` varchar(2) NOT NULL,
-  `avatar` varchar(40) NOT NULL,
-  `estado` tinyint(1) NOT NULL
+  `email` varchar(255) NOT NULL,
+  `password_hash` varchar(512) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `apellido` varchar(100) DEFAULT NULL,
+  `avatar_path` varchar(255) DEFAULT NULL,
+  `rol` enum('Admin','Empleado') NOT NULL DEFAULT 'Empleado',
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -226,7 +237,8 @@ ALTER TABLE `tipo`
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`id_usuario`);
+  ADD PRIMARY KEY (`id_usuario`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -236,19 +248,19 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
 --
 ALTER TABLE `inquilino`
-  MODIFY `id_inquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_inquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `pago`
@@ -260,7 +272,7 @@ ALTER TABLE `pago`
 -- AUTO_INCREMENT de la tabla `propietario`
 --
 ALTER TABLE `propietario`
-  MODIFY `id_propietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_propietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo`
@@ -296,7 +308,7 @@ ALTER TABLE `inmueble`
 -- Filtros para la tabla `pago`
 --
 ALTER TABLE `pago`
-  ADD CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`id_contrato`) REFERENCES `contrato` (`id_contrato`);
+  ADD CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`id_contrato`) REFERENCES `contrato` (`id_contrato`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
