@@ -24,16 +24,23 @@
 <div>
     <strong>Estado:</strong> @(Model.estado ? "Activo" : "Cerrado")
 </div>
-<div>
-    <strong>Creado por:</strong> @Model.CreatedByUser?.nombre @Model.CreatedByUser?.apellido
-</div>
+
 <div>
     <strong>Fecha creación:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy")
 </div>
-<div>
-    <strong>Finalizado por:</strong> @Model.ClosedByUser?.nombre @Model.ClosedByUser?.apellido
-</div>
+
 <div>
     <strong>Fecha cierre:</strong> @(Model.ClosedAt?.ToString("dd/MM/yyyy") ?? "-")
 </div>
 
+@if (User.IsInRole("Administrador")){
+    <div>
+        <strong>Creado por:</strong> @Model.CreatedByUser?.nombre @Model.CreatedByUser?.apellido
+    </div>
+    @if(Model.ClosedByUserId!=null){
+
+        <div>
+            <strong>Finalizado por:</strong> @Model.ClosedByUser?.nombre @Model.ClosedByUser?.apellido
+        </div>
+    }
+}

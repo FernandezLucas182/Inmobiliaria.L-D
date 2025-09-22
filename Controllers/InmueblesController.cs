@@ -18,6 +18,19 @@ namespace InmobiliariaMVC.Controllers
             return View(lista);
         }
 
+         // Nueva acción: lista solo disponibles (habilitado = 0)
+        public IActionResult Disponibles()
+        {
+            var lista = repositorio.ObtenerDisponibles();
+            return View(lista); //  va a buscar una View llamada "Disponibles.cshtml"
+        }
+        
+        public IActionResult SinContrato()
+        {
+            var lista = repositorio.ObtenerSinContrato();
+            return View("Index", lista); // Reutilizamos la misma vista Index
+        }
+
         // GET: Inmueble/Details/5
         public IActionResult Details(int id)
         {

@@ -10,6 +10,25 @@
     <a class="btn btn-primary" asp-action="Create">Nuevo Inmueble</a>
 </p>
 
+<form method="get" asp-action="Index" class="mb-3">
+    <label for="disponibles">Filtrar:</label>
+    <select name="disponibles" id="disponibles" class="form-select d-inline w-auto" onchange="this.form.submit()">
+        <option value="">-- Todos --</option>
+        <option value="true">Disponibles</option>
+        <option value="false">Inactivos</option>
+    </select>
+</form>
+
+<form method="get" asp-action="Index" class="mb-3">
+    <label for="filtro">Filtrar:</label>
+    <select name="filtro" id="filtro" class="form-select d-inline w-auto" onchange="this.form.submit()">
+        <option value="">-- Todos --</option>
+        <option value="disponibles">Disponibles</option>
+        <option value="inactivos">Inactivos</option>
+        <option value="sinContrato">Sin contrato</option> <!-- 👈 nuevo -->
+    </select>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>

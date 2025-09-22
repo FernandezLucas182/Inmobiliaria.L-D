@@ -1,47 +1,48 @@
-@model InmobiliariaMVC.Models.Pago
+@model IEnumerable<InmobiliariaMVC.Models.Pago>
 
 @{
-    ViewBag.Title = "Editar Pago";
+    ViewBag.Title = "Pagos";
 }
 
-<h2>Editar Pago</h2>
+<h2>Listado de Pagos</h2>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="id_pago" />
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nuevo pago</a>
+</p>
 
-    <div class="form-group">
-        <label asp-for="id_contrato">Contrato (Id)</label>
-        <input asp-for="id_contrato" class="form-control" />
-        <span asp-validation-for="id_contrato" class="text-danger"></span>
-    </div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Contrato</th>
+            <th>Fecha</th>
+            <th>Importe</th>
+            <th>Nro Pago</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.id_pago</td>
+            <td>@item.id_contrato</td>
+            <td>@item.fecha.ToString("dd/MM/yyyy")</td>
+            <td>@item.importe</td>
+            <td>@item.nro_pago</td>
+            <td>@(item.estado ? "Activo" : "Anulado")</td>
+            <td>
+                <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.id_pago">Ver</a>
+                <a class="btn btn-sm btn-secondary" asp-action="Edit" asp-route-id="@item.id_pago">Editar</a>
+                <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.id_pago">Eliminar</a>
 
-    <div class="form-group">
-        <label asp-for="fecha">Fecha</label>
-        <input asp-for="fecha" class="form-control" type="date" />
-        <span asp-validation-for="fecha" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="importe">Importe</label>
-        <input asp-for="importe" class="form-control" />
-        <span asp-validation-for="importe" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="nro_pago">Número de pago</label>
-        <input asp-for="nro_pago" class="form-control" />
-        <span asp-validation-for="nro_pago" class="text-danger"></span>
-    </div>
-
-    <div class="form-group form-check">
-        <input asp-for="estado" class="form-check-input" />
-        <label asp-for="estado" class="form-check-label">Activo</label>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+                @if (item.estado)
+                {
+                    <a class="btn btn-sm btn-warning" asp-action="Cancelar" asp-route-id="@item.id_pago">Anular</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

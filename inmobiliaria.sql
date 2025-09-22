@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-09-2025 a las 22:03:47
+-- Tiempo de generación: 22-09-2025 a las 16:11:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -49,8 +49,7 @@ CREATE TABLE `contrato` (
 --
 
 INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `fecha_fin_anticipada`, `multa`, `meses_adeudado`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
-(2, 1, 1, 450000, '2025-09-18', '2025-10-31', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL),
-(3, 3, 1, 450000, '2025-09-26', '2025-09-20', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL);
+(4, 1, 1, 2457432, '2025-12-24', '2026-01-30', NULL, NULL, NULL, 1, 2, '2025-09-19 19:03:47', 2, '2025-09-19 19:03:57');
 
 -- --------------------------------------------------------
 
@@ -187,6 +186,14 @@ CREATE TABLE `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`id_usuario`, `email`, `password_hash`, `nombre`, `apellido`, `avatar_path`, `rol`, `created_at`, `updated_at`) VALUES
+(1, 'admin@inmobiliaria.com', 'AQAAAAIAAYagAAAAEFqmz1vIJVCDnX3Tuy5MArsDBkZZ6l/dsUI3NuQXnAoRVpN3wan/153ShiTbaL4XEg==', 'Admin', 'Principal', '', 'Admin', '2025-09-19 18:06:26', '2025-09-19 18:06:26'),
+(2, 'empleado1@inmobiliaria.com', 'AQAAAAIAAYagAAAAEHLngQzyvoKjl2GtJgY2s84Wnq/YYFPnuUdGuE/wAw2Jx7XPRaXKKp/8WvZ/T/NnOw==', 'Jorge', 'Mendez', '', 'Empleado', '2025-09-19 18:08:58', '2025-09-19 18:08:58');
+
+--
 -- Índices para tablas volcadas
 --
 
@@ -248,7 +255,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
@@ -284,7 +291,7 @@ ALTER TABLE `tipo`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas

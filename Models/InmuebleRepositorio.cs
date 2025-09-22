@@ -59,6 +59,110 @@ namespace InmobiliariaMVC.Models
             // Métodos Crear, Editar, Eliminar vendrían después
         }
 
+        //metodo obtener disponibles:
+        public List<Inmueble> ObtenerDisponibles()
+{
+    var lista = new List<Inmueble>();
+    using (var connection = new MySqlConnection(connectionString))
+    {
+        string sql = @"SELECT i.id_inmueble, i.direccion, i.uso, i.ambiente, i.precio, i.habilitado,
+                              p.id_propietario, p.apellido, p.nombre AS proNombre,
+                              t.id_tipo, t.nombre AS tipoNombre
+                       FROM inmueble i
+                       INNER JOIN propietario p ON i.id_propietario = p.id_propietario
+                       INNER JOIN tipo t ON i.id_tipo = t.id_tipo
+                       WHERE i.habilitado = 0;";   //  filtro por habilitado = 0
+
+        using (var command = new MySqlCommand(sql, connection))
+        {
+            connection.Open();
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var inmueble = new Inmueble
+                    {
+                        id_inmueble = reader.GetInt32("id_inmueble"),
+                        direccion = reader.GetString("direccion"),
+                        uso = reader.GetString("uso"),
+                        ambiente = reader.GetInt32("ambiente"),
+                        precio = reader.GetDecimal("precio"),
+                        estado = reader.GetBoolean("habilitado"),
+                        Propietario = new Propietario
+                        {
+                            id_propietario = reader.GetInt32("id_propietario"),
+                            apellido = reader.GetString("apellido"),
+                            nombre = reader.GetString("proNombre")
+                        },
+                        Tipo = new Tipo
+                        {
+                            id_tipo = reader.GetInt32("id_tipo"),
+                            nombre = reader.GetString("tipoNombre")
+                        }
+                    };
+                    lista.Add(inmueble);
+                }
+            }
+        }
+        return lista;
+    }
+}
+
+public List<Inmueble> ObtenerSinContrato()
+{
+    var lista = new List<Inmueble>();
+    using (var connection = new MySqlConnection(connectionString))
+    {
+        string sql = @"
+            SELECT i.id_inmueble, i.direccion, i.uso, i.ambiente, i.precio, i.habilitado,
+                   p.id_propietario, p.apellido, p.nombre AS proNombre,
+                   t.id_tipo, t.nombre AS tipoNombre
+            FROM inmueble i
+            INNER JOIN propietario p ON i.id_propietario = p.id_propietario
+            INNER JOIN tipo t ON i.id_tipo = t.id_tipo
+            LEFT JOIN contrato c ON i.id_inmueble = c.id_inmueble
+            WHERE c.id_contrato IS NULL;";   // Solo los que no tienen contrato
+
+        using (var command = new MySqlCommand(sql, connection))
+        {
+            connection.Open();
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var inmueble = new Inmueble
+                    {
+                        id_inmueble = reader.GetInt32("id_inmueble"),
+                        direccion = reader.GetString("direccion"),
+                        uso = reader.GetString("uso"),
+                        ambiente = reader.GetInt32("ambiente"),
+                        precio = reader.GetDecimal("precio"),
+                        estado = reader.GetBoolean("habilitado"),
+                        Propietario = new Propietario
+                        {
+                            id_propietario = reader.GetInt32("id_propietario"),
+                            apellido = reader.GetString("apellido"),
+                            nombre = reader.GetString("proNombre")
+                        },
+                        Tipo = new Tipo
+                        {
+                            id_tipo = reader.GetInt32("id_tipo"),
+                            nombre = reader.GetString("tipoNombre")
+                        }
+                    };
+                    lista.Add(inmueble);
+                }
+            }
+        }
+    }
+    return lista;
+}
+
+
+
+
+
+
         public int Baja(int id)
         {
             int filasAfectadas;

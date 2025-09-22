@@ -90,5 +90,24 @@ namespace InmobiliariaMVC.Controllers
             repoPago.Baja(id);
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Pagos/Cancelar/5
+public IActionResult Cancelar(int id)
+{
+    var pago = repoPago.ObtenerPorId(id);
+    if (pago == null) return NotFound();
+    return View(pago);
+}
+
+// POST: Pagos/Cancelar/5
+[HttpPost, ActionName("Cancelar")]
+[ValidateAntiForgeryToken]
+public IActionResult CancelarConfirmed(int id)
+{
+    var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+    repoPago.CancelarPago(id, userId);
+    return RedirectToAction(nameof(Index));
+}
+
     }
 }
