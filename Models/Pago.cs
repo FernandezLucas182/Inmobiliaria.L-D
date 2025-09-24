@@ -1,5 +1,3 @@
-
-
 namespace InmobiliariaMVC.Models
 {
     public class Pago
@@ -7,20 +5,22 @@ namespace InmobiliariaMVC.Models
         public int id_pago { get; set; }
         public int id_contrato { get; set; }
         public DateTime fecha { get; set; }
-        public int importe { get; set; }
+        public decimal importe { get; set; }  // mejor decimal porque en DB es DECIMAL(10,2)
         public int nro_pago { get; set; }
+
+        public string? detalle { get; set; } = "";
         public bool estado { get; set; } = true;
 
         // --- Auditoría ---
-        public int CreatedByUserId { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public int? CanceledByUserId { get; set; }
-        public DateTime? CanceledAt { get; set; }
+        public int? CreatedByUserId { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public int? ClosedByUserId { get; set; }
+        public DateTime? ClosedAt { get; set; }
 
+        // Relaciones (opcionales)
         public Usuario? CreatedByUser { get; set; }
-        public Usuario? CanceledByUser { get; set; }
+        public Usuario? ClosedByUser { get; set; }
 
         public Contrato? Contrato { get; set; }
     }
 }
-

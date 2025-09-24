@@ -1,0 +1,28 @@
+@model InmobiliariaMVC.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalles de Usuario";
+}
+
+<h2>Detalles del Usuario</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Nombre:</strong> @Model.nombre</p>
+        <p><strong>Apellido:</strong> @Model.apellido</p>
+        <p><strong>Email:</strong> @Model.email</p>
+        <p><strong>Rol:</strong> @Model.rol</p>
+
+        @if (!string.IsNullOrEmpty(Model.avatar_path))
+        {
+            <p><strong>Avatar:</strong></p>
+            <img src="@Url.Content(Model.avatar_path)" alt="Avatar" width="100" height="100" />
+        }
+        else
+        {
+            <p><em>Sin avatar</em></p>
+        }
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Volver</a>

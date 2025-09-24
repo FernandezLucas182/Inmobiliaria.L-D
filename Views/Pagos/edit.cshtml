@@ -1,48 +1,53 @@
-@model IEnumerable<InmobiliariaMVC.Models.Pago>
+@model InmobiliariaMVC.Models.Pago
 
 @{
-    ViewBag.Title = "Pagos";
+    ViewBag.Title = "Editar Pago";
+    bool isActivo = Model.estado;
 }
 
-<h2>Listado de Pagos</h2>
+<h2>Editar Pago</h2>
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Nuevo pago</a>
-</p>
+@if (!isActivo)
+{
+    <div class="alert alert-warning">
+        Este pago está anulado y no se puede editar.
+    </div>
+}
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Contrato</th>
-            <th>Fecha</th>
-            <th>Importe</th>
-            <th>Nro Pago</th>
-            <th>Estado</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="id_pago" />
+
+    <div class="form-group">
+        <label>Número de Pago</label>
+        <input class="form-control" value="@Model.nro_pago" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Fecha</label>
+        <input class="form-control" value="@Model.fecha.ToString("dd/MM/yyyy")" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Importe</label>
+        <input class="form-control" value="@Model.importe.ToString()" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Detalle</label>
+        @if (isActivo)
+        {
+            <input asp-for="detalle" class="form-control" />
+        }
+        else
+        {
+            <input asp-for="detalle" class="form-control" disabled />
+        }
+        <span asp-validation-for="detalle" class="text-danger"></span>
+    </div>
+
+    @if (isActivo)
     {
-        <tr>
-            <td>@item.id_pago</td>
-            <td>@item.id_contrato</td>
-            <td>@item.fecha.ToString("dd/MM/yyyy")</td>
-            <td>@item.importe</td>
-            <td>@item.nro_pago</td>
-            <td>@(item.estado ? "Activo" : "Anulado")</td>
-            <td>
-                <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.id_pago">Ver</a>
-                <a class="btn btn-sm btn-secondary" asp-action="Edit" asp-route-id="@item.id_pago">Editar</a>
-                <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.id_pago">Eliminar</a>
-
-                @if (item.estado)
-                {
-                    <a class="btn btn-sm btn-warning" asp-action="Cancelar" asp-route-id="@item.id_pago">Anular</a>
-                }
-            </td>
-        </tr>
+        <button type="submit" class="btn btn-primary">Guardar</button>
     }
-    </tbody>
-</table>
+    <a class="btn btn-secondary" href="@Url.Action("Index")">Cancelar</a>
+</form>
