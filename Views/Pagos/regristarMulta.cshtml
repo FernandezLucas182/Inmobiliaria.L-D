@@ -1,0 +1,36 @@
+@model InmobiliariaMVC.Models.Pago
+@{
+    ViewBag.Title = "Registrar Multa";
+    var contrato = ViewBag.Contrato as InmobiliariaMVC.Models.Contrato;
+}
+
+<h2>Registrar Multa para el Contrato #@contrato?.id_contrato</h2>
+
+<p>
+    <strong>Inquilino:</strong> @contrato?.Inquilino?.nombre @contrato?.Inquilino?.apellido<br />
+    <strong>Inmueble:</strong> @contrato?.Inmueble?.direccion<br />
+    <strong>Monto mensual:</strong> @contrato?.monto.ToString("C")<br />
+    <strong>Fecha de finalización:</strong> @contrato?.fecha_fin.ToString("dd/MM/yyyy")
+</p>
+
+<form asp-action="RegistrarMulta" method="post">
+    <input type="hidden" asp-for="id_contrato" />
+
+    <div class="form-group">
+        <label>Fecha</label>
+        <input asp-for="fecha" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="form-group">
+        <label>Detalle</label>
+        <input asp-for="detalle" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Importe de la multa</label>
+        <input asp-for="importe" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar Multa</button>
+    <a class="btn btn-secondary" href="@Url.Action("PagosPorContrato", "Pagos", new { id = contrato?.id_contrato })">Cancelar</a>
+</form>
