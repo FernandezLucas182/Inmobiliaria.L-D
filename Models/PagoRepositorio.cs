@@ -62,34 +62,35 @@ namespace InmobiliariaMVC.Models
             return null;
         }
 
-        public IList<Pago> ObtenerPorContrato(int contratoId)
+        public IList<Pago> ObtenerPorContrato(int idContrato)
         {
             var lista = new List<Pago>();
             using var connection = new MySqlConnection(connectionString);
-
-            string sql = @"
-                SELECT p.id_pago, p.id_contrato, p.fecha, p.importe, p.nro_pago, p.detalle, p.estado,
-                       p.CreatedByUserId, p.CreatedAt, p.ClosedByUserId, p.ClosedAt,
-                       u1.Nombre AS CreatedByNombre, u1.Apellido AS CreatedByApellido,
-                       u2.Nombre AS ClosedByNombre, u2.Apellido AS ClosedByApellido,
-                       c.monto, c.fecha_desde, c.fecha_hasta
-                FROM pago p
-                INNER JOIN contrato c ON p.id_contrato = c.id_contrato
-                LEFT JOIN usuario u1 ON p.CreatedByUserId = u1.id_usuario
-                LEFT JOIN usuario u2 ON p.ClosedByUserId = u2.id_usuario
-                WHERE p.id_contrato=@id_contrato";
-
+            string sql = @"SELECT p.*, c.id_contrato 
+                   FROM pago p
+                   INNER JOIN contrato c ON p.id_contrato = c.id_contrato
+                   WHERE p.id_contrato = @idContrato";
             using var command = new MySqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id_contrato", contratoId);
+            command.Parameters.AddWithValue("@idContrato", idContrato);
             connection.Open();
-            using var reader = command.ExecuteReader();
+            var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                lista.Add(MapPago(reader));
+                var pago = new Pago
+                {
+                    id_pago = reader.GetInt32("id_pago"),
+                    id_contrato = reader.GetInt32("id_contrato"),
+                    nro_pago = reader.GetInt32("nro_pago"),
+                    fecha = reader.GetDateTime("fecha"),
+                    detalle = reader.GetString("detalle"),
+                    importe = reader.GetInt32("importe"),
+                    estado = reader.GetBoolean("estado"),
+                };
+                lista.Add(pago);
             }
-
             return lista;
         }
+
 
         #endregion
 

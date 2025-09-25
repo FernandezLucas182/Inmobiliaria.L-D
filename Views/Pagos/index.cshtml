@@ -5,6 +5,11 @@
 
 <h2>Pagos</h2>
 
+<div class="mb-3">
+    <a class="btn btn-success" href="@Url.Action("Create", "Pagos")">➕ Agregar Pago</a>
+    <a class="btn btn-info" href="@Url.Action("BuscarPorContrato", "Pagos")">📑 Pagos por Contrato</a>
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -18,17 +23,17 @@
         </tr>
     </thead>
     <tbody>
-        @foreach(var pago in Model)
+        @foreach (var pago in Model)
         {
             <tr class="@(pago.estado ? "" : "table-danger")">
                 <td>@pago.Contrato?.id_contrato</td>
                 <td>@pago.nro_pago</td>
                 <td>@pago.fecha.ToString("dd/MM/yyyy")</td>
                 <td>@pago.detalle</td>
-                <td>@pago.importe.ToString("C")</td>
+                <td>@pago.importe.ToString()</td>
                 <td>@(pago.estado ? "Activo" : "Anulado")</td>
                 <td>
-                    @if(pago.estado)
+                    @if (pago.estado)
                     {
                         <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Pagos", new { id = pago.id_pago })">Editar</a>
                         <a class="btn btn-danger btn-sm" href="@Url.Action("Cerrar", "Pagos", new { id = pago.id_pago })">Anular</a>

@@ -1,0 +1,13 @@
+@{
+    ViewBag.Title = "Buscar Pagos por Contrato";
+}
+
+<h2>Buscar Pagos por Contrato</h2>
+
+<form asp-action="PagosPorContrato" method="get" class="form-inline">
+    <div class="form-group mb-2">
+        <label for="idContrato" class="mr-2">ID Contrato:</label>
+        <input type="number" name="idContrato" id="idContrato" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary mb-2">Buscar</button>
+</form>

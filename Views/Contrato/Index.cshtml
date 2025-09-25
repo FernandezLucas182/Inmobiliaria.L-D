@@ -19,9 +19,7 @@
             <th>Fecha Inicio</th>
             <th>Fecha Fin</th>
             <th>Estado</th>
-            <th>Creado Por</th>
             <th>Fecha Creación</th>
-            <th>Terminado Por</th>
             <th>Fecha Cierre</th>
             <th>Acciones</th>
         </tr>
@@ -31,15 +29,13 @@
         {
             <tr>
                 <td>@c.id_contrato</td>
-                <td>@c.Inquilino?.nombre</td>
+                <td>@c.Inquilino?.nombre @c.Inquilino?.apellido</td>
                 <td>@c.Inmueble?.direccion</td>
                 <td>@c.monto</td>
                 <td>@c.fecha_inicio.ToShortDateString()</td>
                 <td>@c.fecha_fin.ToShortDateString()</td>
                 <td>@(c.estado ? "Activo" : "Finalizado")</td>
-                <td>@c.CreatedByUser?.nombre @c.CreatedByUser?.apellido</td>
                 <td>@c.CreatedAt.ToShortDateString()</td>
-                <td>@c.ClosedByUser?.nombre @c.ClosedByUser?.apellido</td>
                 <td>@(c.ClosedAt.HasValue ? c.ClosedAt.Value.ToShortDateString() : "-")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@c.id_contrato" class="btn btn-sm btn-primary">Editar</a>

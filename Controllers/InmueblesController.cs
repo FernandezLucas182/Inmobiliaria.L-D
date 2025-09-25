@@ -12,24 +12,67 @@ namespace InmobiliariaMVC.Controllers
 
 
         // GET: Inmueble
-        public IActionResult Index()
-        {
-            var lista = repositorio.ObtenerTodos();
-            return View(lista);
-        }
+        // GET: Inmueble
+public IActionResult Index(string? filtro, bool? disponibles)
+{
+    List<Inmueble> lista;
 
-         // Nueva acción: lista solo disponibles (habilitado = 0)
-        public IActionResult Disponibles()
+    // --- Filtrar por parámetro "disponibles" (true/false) ---
+    if (disponibles.HasValue)
+    {
+        if (disponibles.Value)
         {
-            var lista = repositorio.ObtenerDisponibles();
-            return View(lista); //  va a buscar una View llamada "Disponibles.cshtml"
+            lista = repositorio.ObtenerTodos().Where(x => x.estado).ToList();
+            filtro = "disponibles"; // guardamos el filtro aplicado
         }
-        
-        public IActionResult SinContrato()
+        else
         {
-            var lista = repositorio.ObtenerSinContrato();
-            return View("Index", lista); // Reutilizamos la misma vista Index
+            lista = repositorio.ObtenerTodos().Where(x => !x.estado).ToList();
+            filtro = "inactivos"; // guardamos el filtro aplicado
         }
+    }
+    // --- Filtrar por parámetro "filtro" (string) ---
+    else if (!string.IsNullOrEmpty(filtro))
+    {
+        switch (filtro)
+        {
+            case "disponibles":
+                lista = repositorio.ObtenerTodos().Where(x => x.estado).ToList();
+                break;
+            case "inactivos":
+                lista = repositorio.ObtenerTodos().Where(x => !x.estado).ToList();
+                break;
+            case "sinContrato":
+                lista = repositorio.ObtenerSinContrato();
+                break;
+            default:
+                lista = repositorio.ObtenerTodos();
+                filtro = ""; // por si viene algo raro
+                break;
+        }
+    }
+    else
+    {
+        lista = repositorio.ObtenerTodos();
+        filtro = ""; // sin filtro = todos
+    }
+
+    // 👉 Armar lista de filtros para el combo
+    var filtros = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "-- Todos --" },
+        new SelectListItem { Value = "disponibles", Text = "Disponibles" },
+        new SelectListItem { Value = "inactivos", Text = "Inactivos" },
+        new SelectListItem { Value = "sinContrato", Text = "Sin contrato" }
+    };
+
+    // 👉 Cargar en ViewBag con el valor actual seleccionado
+    ViewBag.Filtros = new SelectList(filtros, "Value", "Text", filtro);
+
+    return View(lista);
+}
+
+
 
         // GET: Inmueble/Details/5
         public IActionResult Details(int id)

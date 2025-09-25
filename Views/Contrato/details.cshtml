@@ -6,41 +6,44 @@
 
 <h2>Detalle del Contrato</h2>
 
-<div>
-    <strong>Inquilino:</strong> @Model.Inquilino?.nombre @Model.Inquilino?.apellido
-</div>
-<div>
-    <strong>Inmueble:</strong> @Model.Inmueble?.direccion
-</div>
-<div>
-    <strong>Monto:</strong> @Model.monto
-</div>
-<div>
-    <strong>Fecha desde:</strong> @Model.fecha_inicio.ToString("dd/MM/yyyy")
-</div>
-<div>
-    <strong>Fecha hasta:</strong> @Model.fecha_fin.ToString("dd/MM/yyyy")
-</div>
-<div>
-    <strong>Estado:</strong> @(Model.estado ? "Activo" : "Cerrado")
+<div class="card p-3">
+    <dl class="row">
+        <dt class="col-sm-3">Inquilino</dt>
+        <dd class="col-sm-9">@Model.Inquilino?.nombre @Model.Inquilino?.apellido</dd>
+
+        <dt class="col-sm-3">Inmueble</dt>
+        <dd class="col-sm-9">@Model.Inmueble?.direccion</dd>
+
+        <dt class="col-sm-3">Monto</dt>
+        <dd class="col-sm-9">@Model.monto</dd>
+
+        <dt class="col-sm-3">Fecha inicio</dt>
+        <dd class="col-sm-9">@Model.fecha_inicio.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Fecha fin</dt>
+        <dd class="col-sm-9">@Model.fecha_fin.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">@(Model.estado ? "Activo" : "Cerrado")</dd>
+
+        <dt class="col-sm-3">Fecha creación</dt>
+        <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Fecha cierre</dt>
+        <dd class="col-sm-9">@(Model.ClosedAt?.ToString("dd/MM/yyyy") ?? "-")</dd>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <dt class="col-sm-3">Creado por</dt>
+            <dd class="col-sm-9">@Model.CreatedByUser?.nombre @Model.CreatedByUser?.apellido</dd>
+
+            @if (Model.ClosedByUserId != null)
+            {
+                <dt class="col-sm-3">Finalizado por</dt>
+                <dd class="col-sm-9">@Model.ClosedByUser?.nombre @Model.ClosedByUser?.apellido</dd>
+            }
+        }
+    </dl>
 </div>
 
-<div>
-    <strong>Fecha creación:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy")
-</div>
-
-<div>
-    <strong>Fecha cierre:</strong> @(Model.ClosedAt?.ToString("dd/MM/yyyy") ?? "-")
-</div>
-
-@if (User.IsInRole("Administrador")){
-    <div>
-        <strong>Creado por:</strong> @Model.CreatedByUser?.nombre @Model.CreatedByUser?.apellido
-    </div>
-    @if(Model.ClosedByUserId!=null){
-
-        <div>
-            <strong>Finalizado por:</strong> @Model.ClosedByUser?.nombre @Model.ClosedByUser?.apellido
-        </div>
-    }
-}
+<a asp-action="Index" class="btn btn-secondary mt-3">Volver</a>

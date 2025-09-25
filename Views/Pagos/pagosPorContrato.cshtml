@@ -1,22 +1,16 @@
 @model IEnumerable<InmobiliariaMVC.Models.Pago>
 @{
     ViewBag.Title = "Pagos del Contrato";
-    var contrato = ViewBag.Contrato as InmobiliariaMVC.Models.Contrato;
-    bool isAdmin = User.IsInRole("Admin");
+    var contratoId = ViewBag.ContratoId;
 }
 
-<h2>Pagos del Contrato #@contrato?.id_contrato</h2>
+<h2>Pagos del Contrato @contratoId</h2>
 
-<p>
-    <strong>Inquilino:</strong> @contrato?.Inquilino?.nombre @contrato?.Inquilino?.apellido<br />
-    <strong>Inmueble:</strong> @contrato?.Inmueble?.direccion<br />
-    <strong>Monto mensual:</strong> @contrato?.monto.ToString()
-</p>
+<div class="mb-3">
+    <a class="btn btn-success" href="@Url.Action("CreatePorContrato", "Pagos", new { idContrato = contratoId })">➕ Agregar Pago a este Contrato</a>
+</div>
 
-<a class="btn btn-success" href="@Url.Action("Create", "Pagos", new { contratoId = contrato?.id_contrato })">Agregar Pago</a>
-<a class="btn btn-warning" href="@Url.Action("RegistrarMulta", "Pagos", new { contratoId = contrato?.id_contrato })">Registrar Multa</a>
-
-<table class="table table-striped mt-3">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>Nro Pago</th>
@@ -24,12 +18,10 @@
             <th>Detalle</th>
             <th>Importe</th>
             <th>Estado</th>
-            @if (isAdmin) { <th>Creado Por</th><th>Creado En</th><th>Cerrado Por</th><th>Cerrado En</th> }
-            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach(var pago in Model)
+        @foreach (var pago in Model)
         {
             <tr class="@(pago.estado ? "" : "table-danger")">
                 <td>@pago.nro_pago</td>
@@ -37,20 +29,6 @@
                 <td>@pago.detalle</td>
                 <td>@pago.importe.ToString("C")</td>
                 <td>@(pago.estado ? "Activo" : "Anulado")</td>
-                @if (isAdmin)
-                {
-                    <td>@pago.CreatedByUser?.nombre @pago.CreatedByUser?.apellido</td>
-                    <td>@(pago.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "")</td>
-                    <td>@pago.ClosedByUser?.nombre @pago.ClosedByUser?.apellido</td>
-                    <td>@(pago.ClosedAt?.ToString("dd/MM/yyyy HH:mm") ?? "")</td>
-                }
-                <td>
-                    @if(pago.estado)
-                    {
-                        <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Pagos", new { id = pago.id_pago })">Editar</a>
-                        <a class="btn btn-danger btn-sm" href="@Url.Action("Cerrar", "Pagos", new { id = pago.id_pago })">Anular</a>
-                    }
-                </td>
             </tr>
         }
     </tbody>
