@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
+using InmobiliariaMVC.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace InmobiliariaMVC.Controllers
 {
@@ -9,15 +11,16 @@ namespace InmobiliariaMVC.Controllers
     {
         private readonly PagoRepositorio repoPago = new PagoRepositorio();
         private readonly ContratoRepositorio repoContrato = new ContratoRepositorio();
+        private readonly MultaService multaService = new MultaService();
 
-        // GET: Pagos
+        // Listado de pagos
         public IActionResult Index()
         {
             var lista = repoPago.ObtenerTodos();
             return View(lista);
         }
 
-        // GET: Pagos/Details/5
+        // Detalles de un pago
         public IActionResult Details(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
@@ -26,78 +29,44 @@ namespace InmobiliariaMVC.Controllers
             ViewBag.IsAdmin = User.IsInRole("Admin");
             return View(pago);
         }
-        // GET: Pagos/Create
+
+        // Crear pago
         public IActionResult Create()
         {
-            var contratos = repoContrato.ObtenerContratosConDetalle();
-            ViewBag.Contratos = new SelectList(
-                contratos.Select(c => new
-                {
-                    id_contrato = c.id_contrato,
-                    Display = $"{c.Inquilino?.apellido}, {c.Inquilino?.nombre} - {c.Inmueble?.direccion}"
-                }),
-                "id_contrato",
-                "Display"
-            );
-
-            var pago = new Pago
-            {
-                fecha = DateTime.Today
-            };
-
-            return View(pago);
+            CargarContratos();
+            return View(new Pago { fecha = DateTime.Today });
         }
 
-
-        // POST: Pagos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Pago pago)
         {
             if (ModelState.IsValid)
             {
-                var repo = new PagoRepositorio();
-
-                //  Genera el número de pago automáticamente
                 if (pago.id_contrato > 0)
                 {
-                    var pagosExistentes = repo.ObtenerPorContrato(pago.id_contrato);
+                    var pagosExistentes = repoPago.ObtenerPorContrato(pago.id_contrato);
                     pago.nro_pago = (pagosExistentes?.Count ?? 0) + 1;
                 }
 
-               // Auditoría: guardo el usuario que creó el pago
-               var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-                repo.Alta(pago, userId);
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                repoPago.Alta(pago, userId);
 
                 return RedirectToAction(nameof(Index));
             }
 
-            // Si falla la validación, reconstruyo el SelectList
-            var contratos = repoContrato.ObtenerContratosConDetalle();
-            ViewBag.Contratos = new SelectList(
-                contratos.Select(c => new
-                {
-                    id_contrato = c.id_contrato,
-                    Display = $"{c.Inquilino?.apellido}, {c.Inquilino?.nombre} - {c.Inmueble?.direccion}"
-                }),
-                "id_contrato",
-                "Display",
-                pago.id_contrato
-            );
-
+            CargarContratos(pago.id_contrato);
             return View(pago);
         }
 
-
-        // GET: Pagos/Edit/5
+        // Editar pago
         public IActionResult Edit(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
-            if (pago == null || !pago.estado) return NotFound(); // solo se edita si está activo
+            if (pago == null || !pago.estado) return NotFound();
             return View(pago);
         }
 
-        // POST: Pagos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Pago pago)
@@ -106,14 +75,14 @@ namespace InmobiliariaMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                repoPago.Modificacion(pago); // solo se modifica detalle
+                repoPago.Modificacion(pago);
                 return RedirectToAction(nameof(Index));
             }
 
             return View(pago);
         }
 
-        // GET: Pagos/Cancelar/5
+        // Cancelar pago
         public IActionResult Cancelar(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
@@ -121,7 +90,6 @@ namespace InmobiliariaMVC.Controllers
             return View(pago);
         }
 
-        // POST: Pagos/Cancelar/5
         [HttpPost, ActionName("Cancelar")]
         [ValidateAntiForgeryToken]
         public IActionResult CancelarConfirmed(int id)
@@ -131,116 +99,95 @@ namespace InmobiliariaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-
-        // GET: Pagos/RegistrarMulta/5
+        // Registrar multa (GET)
         public IActionResult RegistrarMulta(int contratoId)
         {
             var contrato = repoContrato.ObtenerPorId(contratoId);
             if (contrato == null) return NotFound();
 
-            // Solo permitir si el contrato aún está activo
             if (!contrato.estado)
             {
                 TempData["Error"] = "El contrato ya está cerrado.";
-                return RedirectToAction("PagosPorContrato", new { id = contratoId });
+                return RedirectToAction("PorContrato", new { idContrato = contratoId });
             }
 
-            // Calcular multa
-            decimal multa = CalcularMulta(contrato);
+            decimal multa = multaService.CalcularMulta(contrato);
 
-            // Crear objeto pago temporal
             var pago = new Pago
             {
                 id_contrato = contrato.id_contrato,
                 fecha = DateTime.Now,
                 importe = multa,
                 detalle = "Multa por terminación anticipada",
-                nro_pago = 0 // opcional: 0 o siguiente nro de pago
+                nro_pago = (repoPago.ObtenerPorContrato(contrato.id_contrato)?.Count ?? 0) + 1
             };
 
             ViewBag.Contrato = contrato;
             return View(pago);
         }
 
-        // POST: Pagos/RegistrarMulta/5
+        // Registrar multa (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+        public IActionResult RegistrarMulta(Pago pago)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                repoPago.Alta(pago, userId);
+                repoContrato.TerminarContrato(pago.id_contrato, userId);
 
-public IActionResult RegistrarMulta(Pago pago)
-{
-    if (ModelState.IsValid)
-    {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                return RedirectToAction("PorContrato", new { idContrato = pago.id_contrato });
+            }
 
-        // Registrar multa como pago
-        repoPago.Alta(pago, userId);
+            var contrato = repoContrato.ObtenerPorId(pago.id_contrato);
+            ViewBag.Contrato = contrato;
+            return View(pago);
+        }
 
-        // Cerrar contrato (con fecha de terminación anticipada)
-        repoContrato.TerminarContrato(pago.id_contrato, userId);
+        // Calcular multa para finalización anticipada (JSON)
+        [HttpGet]
+        public IActionResult CalcularMulta(int contratoId)
+        {
+            var contrato = repoContrato.ObtenerPorId(contratoId);
+            if (contrato == null) return NotFound();
 
-        return RedirectToAction("PorContrato", new { idContrato = pago.id_contrato });
-    }
+            var monto = multaService.CalcularMulta(contrato);
+            return Json(new { monto });
+        }
 
-    var contrato = repoContrato.ObtenerPorId(pago.id_contrato);
-    ViewBag.Contrato = contrato;
-    return View(pago);
-}
+        // Listado de pagos por contrato
+        public IActionResult PorContrato(int idContrato)
+        {
+            var lista = repoPago.ObtenerPorContrato(idContrato);
+            if (lista == null || lista.Count == 0)
+            {
+                TempData["Mensaje"] = "No se encontraron pagos para este contrato.";
+                return RedirectToAction("BuscarPorContrato");
+            }
 
+            ViewBag.Inquilino = $"{lista.First().Contrato?.Inquilino?.nombre} {lista.First().Contrato?.Inquilino?.apellido}";
+            ViewBag.ContratoId = idContrato;
 
-        // Método privado para calcular multa
-        private decimal CalcularMulta(Contrato contrato)
-{
-    int duracionTotal = (contrato.fecha_fin - contrato.fecha_inicio).Days;
-    int diasCumplidos = (DateTime.Now - contrato.fecha_inicio).Days;
+            return View(lista);
+        }
 
-    int mesesMulta = diasCumplidos < duracionTotal / 2 ? 2 : 1;
-    return contrato.monto * mesesMulta;
-}
+        // Buscar pagos por contrato
+        public IActionResult BuscarPorContrato()
+        {
+            var contratos = new ContratoRepositorio().ObtenerTodos();
+            ViewBag.Contratos = contratos;
+            return View();
+        }
 
-        // Buscar contrato antes de listar pagos
-       public IActionResult BuscarPorContrato()
-{
-    var contratoRepo = new ContratoRepositorio();
-    var contratos = contratoRepo.ObtenerTodos(); // asegúrate de que traiga Inquilino e Inmueble
-    
-    ViewBag.Contratos = contratos;
-
-    return View();
-}
-
-        // Listar pagos por contrato
-      public IActionResult PorContrato(int idContrato)
-{
-    var lista = repoPago.ObtenerPorContrato(idContrato);
-
-    if (lista == null || lista.Count == 0)
-    {
-        TempData["Mensaje"] = "No se encontraron pagos para este contrato.";
-        return RedirectToAction("BuscarPorContrato");
-    }
-
-    ViewBag.Inquilino = $"{lista.First().Contrato?.Inquilino?.nombre} {lista.First().Contrato?.Inquilino?.apellido}";
-    ViewBag.ContratoId = idContrato;
-
-    return View(lista);
-}
-
-        // Crear pago directamente en un contrato
+        // Crear pago desde contrato
         [HttpGet]
         public IActionResult CreatePorContrato(int idContrato)
         {
-            var repo = new PagoRepositorio();
             var contrato = new ContratoRepositorio().ObtenerPorId(idContrato);
+            if (contrato == null) return NotFound();
 
-            if (contrato == null)
-            {
-                return NotFound();
-            }
-
-            // 👉 Buscar la cantidad de pagos ya realizados para este contrato
-            var pagosExistentes = repo.ObtenerPorContrato(idContrato);
+            var pagosExistentes = repoPago.ObtenerPorContrato(idContrato);
             int nroPagoSiguiente = (pagosExistentes?.Count ?? 0) + 1;
 
             var pago = new Pago
@@ -252,18 +199,30 @@ public IActionResult RegistrarMulta(Pago pago)
 
             return View("Create", pago);
         }
-        // GET: Pagos/ObtenerNroPago
+
+        // Obtener siguiente número de pago (JSON)
         [HttpGet]
         public JsonResult ObtenerNroPago(int idContrato)
         {
-            var repo = new PagoRepositorio();
-            var pagosExistentes = repo.ObtenerPorContrato(idContrato);
+            var pagosExistentes = repoPago.ObtenerPorContrato(idContrato);
             int siguientePago = (pagosExistentes?.Count ?? 0) + 1;
             return Json(new { nro_pago = siguientePago });
         }
 
-
-
-
+        // Método privado para cargar contratos en los dropdowns
+        private void CargarContratos(int contratoSeleccionado = 0)
+        {
+            var contratos = repoContrato.ObtenerContratosConDetalle();
+            ViewBag.Contratos = new SelectList(
+                contratos.Select(c => new
+                {
+                    id_contrato = c.id_contrato,
+                    Display = $"{c.Inquilino?.apellido}, {c.Inquilino?.nombre} - {c.Inmueble?.direccion}"
+                }),
+                "id_contrato",
+                "Display",
+                contratoSeleccionado
+            );
+        }
     }
 }
