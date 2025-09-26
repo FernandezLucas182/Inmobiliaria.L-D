@@ -22,5 +22,6 @@ namespace InmobiliariaMVC.Models
         public Usuario? ClosedByUser { get; set; }
 
         public Contrato? Contrato { get; set; }
+
     }
 }
