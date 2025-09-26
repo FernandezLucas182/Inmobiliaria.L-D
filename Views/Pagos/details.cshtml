@@ -8,7 +8,7 @@
 
 <div class="card">
     <div class="card-body">
-        <p><strong>Contrato:</strong> @Model.Contrato?.id_contrato</p>
+
         <p><strong>Inquilino:</strong> @Model.Contrato?.Inquilino?.nombre @Model.Contrato?.Inquilino?.apellido</p>
         <p><strong>Inmueble:</strong> @Model.Contrato?.Inmueble?.direccion</p>
         <p><strong>Nro de pago:</strong> @Model.nro_pago</p>
@@ -32,9 +32,5 @@
 
 <div class="mt-3">
     <a class="btn btn-secondary" href="@Url.Action("Index", "Pagos")">Volver a la lista</a>
-    @if(Model.estado)
-    {
-        <a class="btn btn-primary" href="@Url.Action("Edit", "Pagos", new { id = Model.id_pago })">Editar Detalle</a>
-        <a class="btn btn-danger" href="@Url.Action("Cerrar", "Pagos", new { id = Model.id_pago })">Anular Pago</a>
-    }
+   
 </div>

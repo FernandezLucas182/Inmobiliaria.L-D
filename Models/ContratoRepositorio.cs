@@ -96,11 +96,11 @@ namespace InmobiliariaMVC.Models
             return lista;
         }
 
-       public Contrato? ObtenerPorId(int id)
-{
-    var contrato = new Contrato();
-    using var connection = new MySqlConnection(connectionString);
-    string sql = @"
+        public Contrato? ObtenerPorId(int id)
+        {
+            var contrato = new Contrato();
+            using var connection = new MySqlConnection(connectionString);
+            string sql = @"
         SELECT 
             c.id_contrato, c.id_inquilino, c.id_inmueble, c.monto, 
             c.fecha_desde, c.fecha_hasta, c.estado,
@@ -121,74 +121,74 @@ namespace InmobiliariaMVC.Models
         LEFT JOIN usuario uF ON c.ClosedByUserId = uF.id_usuario
         WHERE c.id_contrato=@id;";
 
-    using var command = new MySqlCommand(sql, connection);
-    command.Parameters.AddWithValue("@id", id);
-    connection.Open();
-    using var reader = command.ExecuteReader();
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@id", id);
+            connection.Open();
+            using var reader = command.ExecuteReader();
 
-    if (reader.Read())
-    {
-        contrato = new Contrato
-        {
-            id_contrato = reader.GetInt32("id_contrato"),
-            id_inquilino = reader.GetInt32("id_inquilino"),
-            id_inmueble = reader.GetInt32("id_inmueble"),
-            monto = reader.GetDecimal("monto"),
-            fecha_inicio = reader.GetDateTime("fecha_desde"),
-            fecha_fin = reader.GetDateTime("fecha_hasta"),
-            estado = reader.GetBoolean("estado"),
-
-            Inquilino = new Inquilino
+            if (reader.Read())
             {
-                id_inquilino = reader.GetInt32("id_inquilino"),
-                nombre = reader.GetString("InqNombre"),
-                apellido = reader.GetString("InqApellido")
-            },
-
-            Inmueble = new Inmueble
-            {
-                id_inmueble = reader.GetInt32("id_inmueble"),
-                direccion = reader.GetString("InmDireccion"),
-                Tipo = new Tipo
+                contrato = new Contrato
                 {
-                    id_tipo = reader.GetInt32("id_tipo"),
-                    nombre = reader.GetString("TipoNombre")
-                },
-                Propietario = new Propietario
-                {
-                    id_propietario = reader.GetInt32("id_propietario"),
-                    nombre = reader.GetString("PropNombre"),
-                    apellido = reader.GetString("PropApellido")
-                }
-            },
+                    id_contrato = reader.GetInt32("id_contrato"),
+                    id_inquilino = reader.GetInt32("id_inquilino"),
+                    id_inmueble = reader.GetInt32("id_inmueble"),
+                    monto = reader.GetDecimal("monto"),
+                    fecha_inicio = reader.GetDateTime("fecha_desde"),
+                    fecha_fin = reader.GetDateTime("fecha_hasta"),
+                    estado = reader.GetBoolean("estado"),
 
-            CreatedByUser = reader.IsDBNull(reader.GetOrdinal("CreatedByUserId")) ? null : new Usuario
-            {
-                id_usuario = reader.GetInt32("CreatedByUserId"),
-                nombre = reader.GetString("CreadorNombre"),
-                apellido = reader.GetString("CreadorApellido")
-            },
-            ClosedByUser = reader.IsDBNull(reader.GetOrdinal("ClosedByUserId")) ? null : new Usuario
-            {
-                id_usuario = reader.GetInt32("ClosedByUserId"),
-                nombre = reader.GetString("FinalizadorNombre"),
-                apellido = reader.GetString("FinalizadorApellido")
-            },
+                    Inquilino = new Inquilino
+                    {
+                        id_inquilino = reader.GetInt32("id_inquilino"),
+                        nombre = reader.GetString("InqNombre"),
+                        apellido = reader.GetString("InqApellido")
+                    },
 
-            CreatedByUserId = reader.GetInt32("CreatedByUserId"),
-            ClosedByUserId = reader.IsDBNull("ClosedByUserId") ? (int?)null : reader.GetInt32("ClosedByUserId"),
-            CreatedAt = reader.GetDateTime("CreatedAt"),
-            ClosedAt = reader.IsDBNull("ClosedAt") ? (DateTime?)null : reader.GetDateTime("ClosedAt")
-        };
+                    Inmueble = new Inmueble
+                    {
+                        id_inmueble = reader.GetInt32("id_inmueble"),
+                        direccion = reader.GetString("InmDireccion"),
+                        Tipo = new Tipo
+                        {
+                            id_tipo = reader.GetInt32("id_tipo"),
+                            nombre = reader.GetString("TipoNombre")
+                        },
+                        Propietario = new Propietario
+                        {
+                            id_propietario = reader.GetInt32("id_propietario"),
+                            nombre = reader.GetString("PropNombre"),
+                            apellido = reader.GetString("PropApellido")
+                        }
+                    },
 
-        return contrato;
-    }
+                    CreatedByUser = reader.IsDBNull(reader.GetOrdinal("CreatedByUserId")) ? null : new Usuario
+                    {
+                        id_usuario = reader.GetInt32("CreatedByUserId"),
+                        nombre = reader.GetString("CreadorNombre"),
+                        apellido = reader.GetString("CreadorApellido")
+                    },
+                    ClosedByUser = reader.IsDBNull(reader.GetOrdinal("ClosedByUserId")) ? null : new Usuario
+                    {
+                        id_usuario = reader.GetInt32("ClosedByUserId"),
+                        nombre = reader.GetString("FinalizadorNombre"),
+                        apellido = reader.GetString("FinalizadorApellido")
+                    },
 
-    return null;
-}
+                    CreatedByUserId = reader.GetInt32("CreatedByUserId"),
+                    ClosedByUserId = reader.IsDBNull("ClosedByUserId") ? (int?)null : reader.GetInt32("ClosedByUserId"),
+                    CreatedAt = reader.GetDateTime("CreatedAt"),
+                    ClosedAt = reader.IsDBNull("ClosedAt") ? (DateTime?)null : reader.GetDateTime("ClosedAt")
+                };
+
+                return contrato;
+            }
+
+            return null;
+        }
 
 
-
+        #region Alta
         public int Alta(Contrato contrato, int userId)
         {
             using var connection = new MySqlConnection(connectionString);
@@ -227,7 +227,9 @@ namespace InmobiliariaMVC.Models
             connection.Close();
             return id;
         }
+        #endregion
 
+        #region Modificacion
         public int Modificacion(Contrato contrato)
         {
             using var connection = new MySqlConnection(connectionString);
@@ -251,7 +253,9 @@ namespace InmobiliariaMVC.Models
             connection.Open();
             return command.ExecuteNonQuery();
         }
+        #endregion
 
+        #region  TerminarContrato
         public void TerminarContrato(int idContrato, int userId)
         {
             using var connection = new MySqlConnection(connectionString);
@@ -264,7 +268,9 @@ namespace InmobiliariaMVC.Models
             connection.Open();
             command.ExecuteNonQuery();
         }
+        #endregion
 
+        #region Baja
         public int Baja(int id)
         {
             using var connection = new MySqlConnection(connectionString);
@@ -274,5 +280,71 @@ namespace InmobiliariaMVC.Models
             connection.Open();
             return command.ExecuteNonQuery();
         }
+
+        #endregion
+
+        #region ObtenerContratosConDetalle        
+        public IList<Contrato> ObtenerContratosConDetalle()
+        {
+            var lista = new List<Contrato>();
+            using var connection = new MySqlConnection(connectionString);
+
+            string sql = @"
+        SELECT 
+            c.id_contrato, c.id_inquilino, c.id_inmueble, c.monto, 
+            c.fecha_desde, c.fecha_hasta, c.estado,
+            i.nombre AS InqNombre, i.apellido AS InqApellido,
+            inm.direccion AS InmDireccion,
+            t.id_tipo, t.nombre AS TipoNombre
+        FROM contrato c
+        INNER JOIN inquilino i ON c.id_inquilino = i.id_inquilino
+        INNER JOIN inmueble inm ON c.id_inmueble = inm.id_inmueble
+        INNER JOIN tipo t ON inm.id_tipo = t.id_tipo
+        WHERE c.estado = 1;";  // solo contratos activos
+
+            using var command = new MySqlCommand(sql, connection);
+            connection.Open();
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var contrato = new Contrato
+                {
+                    id_contrato = reader.GetInt32("id_contrato"),
+                    id_inquilino = reader.GetInt32("id_inquilino"),
+                    id_inmueble = reader.GetInt32("id_inmueble"),
+                    monto = reader.GetDecimal("monto"),
+                    fecha_inicio = reader.GetDateTime("fecha_desde"),
+                    fecha_fin = reader.GetDateTime("fecha_hasta"),
+                    estado = reader.GetBoolean("estado"),
+
+                    Inquilino = new Inquilino
+                    {
+                        id_inquilino = reader.GetInt32("id_inquilino"),
+                        nombre = reader.GetString("InqNombre"),
+                        apellido = reader.GetString("InqApellido")
+                    },
+
+                    Inmueble = new Inmueble
+                    {
+                        id_inmueble = reader.GetInt32("id_inmueble"),
+                        direccion = reader.GetString("InmDireccion"),
+                        Tipo = new Tipo
+                        {
+                            id_tipo = reader.GetInt32("id_tipo"),
+                            nombre = reader.GetString("TipoNombre")
+                        }
+                    }
+                };
+
+                lista.Add(contrato);
+            }
+
+            return lista;
+        }
+
+        #endregion
+
     }
 }
+    

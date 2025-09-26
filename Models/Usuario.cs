@@ -7,7 +7,7 @@ namespace InmobiliariaMVC.Models
         public string password_hash { get; set; } = "";
         public string nombre { get; set; } = "";
         public string apellido { get; set; } = "";
-        public string? avatar_path { get; set; } = ""; // ruta relativa en wwwroot/uploads/avatars
+        public string? avatar_path { get; set; } = "/images/imgdef.png";
         public string rol { get; set; } = ""; // "Admin" o "Empleado"
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }

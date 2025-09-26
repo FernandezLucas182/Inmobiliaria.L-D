@@ -1,13 +1,23 @@
 @{
     ViewBag.Title = "Buscar Pagos por Contrato";
+    var contratos = ViewBag.Contratos as IEnumerable<InmobiliariaMVC.Models.Contrato>;
 }
 
 <h2>Buscar Pagos por Contrato</h2>
 
-<form asp-action="PagosPorContrato" method="get" class="form-inline">
+
+<form asp-action="PorContrato" method="get" class="form-inline">
     <div class="form-group mb-2">
-        <label for="idContrato" class="mr-2">ID Contrato:</label>
-        <input type="number" name="idContrato" id="idContrato" class="form-control" required />
+        <label for="idContrato" class="mr-2">Seleccione Contrato:</label>
+        <select name="idContrato" id="idContrato" class="form-control" required>
+            <option value="">-- Seleccione --</option>
+            @foreach (var c in contratos)
+            {
+                <option value="@c.id_contrato">
+                    @c.Inquilino?.nombre @c.Inquilino?.apellido - @c.Inmueble?.direccion
+                </option>
+            }
+        </select>
     </div>
     <button type="submit" class="btn btn-primary mb-2">Buscar</button>
 </form>

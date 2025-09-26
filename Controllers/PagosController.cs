@@ -23,7 +23,7 @@ namespace InmobiliariaMVC.Controllers
             var pago = repoPago.ObtenerPorId(id);
             if (pago == null) return NotFound();
 
-            ViewBag.IsAdmin = User.IsInRole("Administrador");
+            ViewBag.IsAdmin = User.IsInRole("Admin");
             return View(pago);
         }
         // GET: Pagos/Create
@@ -166,49 +166,66 @@ namespace InmobiliariaMVC.Controllers
         // POST: Pagos/RegistrarMulta/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RegistrarMulta(Pago pago)
-        {
-            if (ModelState.IsValid)
-            {
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-                repoPago.Alta(pago, userId);
+        
 
-                // Opcional: Terminar contrato automáticamente
-                repoContrato.TerminarContrato(pago.id_contrato, userId);
+public IActionResult RegistrarMulta(Pago pago)
+{
+    if (ModelState.IsValid)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
 
-                return RedirectToAction("PagosPorContrato", new { id = pago.id_contrato });
-            }
+        // Registrar multa como pago
+        repoPago.Alta(pago, userId);
 
-            var contrato = repoContrato.ObtenerPorId(pago.id_contrato);
-            ViewBag.Contrato = contrato;
-            return View(pago);
-        }
+        // Cerrar contrato (con fecha de terminación anticipada)
+        repoContrato.TerminarContrato(pago.id_contrato, userId);
+
+        return RedirectToAction("PorContrato", new { idContrato = pago.id_contrato });
+    }
+
+    var contrato = repoContrato.ObtenerPorId(pago.id_contrato);
+    ViewBag.Contrato = contrato;
+    return View(pago);
+}
+
 
         // Método privado para calcular multa
         private decimal CalcularMulta(Contrato contrato)
-        {
-            // Ejemplo: 1 mes de alquiler como multa proporcional
-            // Se puede cambiar la regla según tus requerimientos
-            decimal montoMensual = contrato.monto;
-            int diasRestantes = (contrato.fecha_fin - DateTime.Now).Days;
-            if (diasRestantes < 0) diasRestantes = 0;
+{
+    int duracionTotal = (contrato.fecha_fin - contrato.fecha_inicio).Days;
+    int diasCumplidos = (DateTime.Now - contrato.fecha_inicio).Days;
 
-            decimal multa = montoMensual * diasRestantes / 30; // proporcional a días restantes
-            return Math.Round(multa, 2);
-        }
+    int mesesMulta = diasCumplidos < duracionTotal / 2 ? 2 : 1;
+    return contrato.monto * mesesMulta;
+}
+
         // Buscar contrato antes de listar pagos
-        public IActionResult BuscarPorContrato()
-        {
-            return View();
-        }
+       public IActionResult BuscarPorContrato()
+{
+    var contratoRepo = new ContratoRepositorio();
+    var contratos = contratoRepo.ObtenerTodos(); // asegúrate de que traiga Inquilino e Inmueble
+    
+    ViewBag.Contratos = contratos;
+
+    return View();
+}
 
         // Listar pagos por contrato
-        public IActionResult PagosPorContrato(int idContrato)
-        {
-            var pagos = repoPago.ObtenerPorContrato(idContrato);
-            ViewBag.ContratoId = idContrato;
-            return View(pagos);
-        }
+      public IActionResult PorContrato(int idContrato)
+{
+    var lista = repoPago.ObtenerPorContrato(idContrato);
+
+    if (lista == null || lista.Count == 0)
+    {
+        TempData["Mensaje"] = "No se encontraron pagos para este contrato.";
+        return RedirectToAction("BuscarPorContrato");
+    }
+
+    ViewBag.Inquilino = $"{lista.First().Contrato?.Inquilino?.nombre} {lista.First().Contrato?.Inquilino?.apellido}";
+    ViewBag.ContratoId = idContrato;
+
+    return View(lista);
+}
 
         // Crear pago directamente en un contrato
         [HttpGet]

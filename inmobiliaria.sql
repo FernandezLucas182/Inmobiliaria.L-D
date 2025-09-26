@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-09-2025 a las 16:11:29
+-- Tiempo de generación: 25-09-2025 a las 16:46:30
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -49,7 +49,9 @@ CREATE TABLE `contrato` (
 --
 
 INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `fecha_fin_anticipada`, `multa`, `meses_adeudado`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
-(4, 1, 1, 2457432, '2025-12-24', '2026-01-30', NULL, NULL, NULL, 1, 2, '2025-09-19 19:03:47', 2, '2025-09-19 19:03:57');
+(4, 1, 1, 2457432, '2025-12-24', '2026-01-30', NULL, NULL, NULL, 1, 2, '2025-09-19 19:03:47', 2, '2025-09-19 19:03:57'),
+(5, 2, 3, 240000, '2025-09-25', '2025-11-30', NULL, NULL, NULL, 1, 1, '2025-09-25 02:33:22', NULL, NULL),
+(6, 3, 5, 50000, '2026-03-13', '2026-04-25', NULL, NULL, NULL, 1, 1, '2025-09-25 02:35:07', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -78,7 +80,7 @@ CREATE TABLE `inmueble` (
 
 INSERT INTO `inmueble` (`id_inmueble`, `id_propietario`, `id_tipo`, `nombre`, `ambiente`, `precio`, `habilitado`, `direccion`, `uso`, `longitud`, `latitud`, `imagen`) VALUES
 (1, 4, 1, '', 4, 2500000, 1, 'Eva Peron', 'Residencial', 0, 0, ''),
-(2, 4, 2, '', 6, 689870, 1, 'B Cerro de la cruz', 'Residencial', 0, 0, ''),
+(2, 4, 2, '', 6, 689870, 0, 'B Cerro de la cruz', 'Residencial', 0, 0, ''),
 (3, 3, 2, '', 6, 56453, 1, 'B Jardin', 'Comercial', 0, 0, ''),
 (4, 3, 2, '', 2, 29500, 1, 'Potrero', 'Comercial', 0, 0, ''),
 (5, 3, 2, '', 8, 29500, 1, 'La Punta', 'Comercial', 0, 0, '');
@@ -119,10 +121,21 @@ CREATE TABLE `pago` (
   `fecha` date NOT NULL,
   `importe` decimal(10,2) NOT NULL,
   `nro_pago` int(11) NOT NULL,
+  `detalle` varchar(255) NOT NULL,
   `estado` tinyint(1) DEFAULT 1,
   `CreatedByUserId` int(11) DEFAULT NULL,
-  `CreatedAt` datetime DEFAULT NULL
+  `CreatedAt` datetime DEFAULT NULL,
+  `ClosedByUserId` int(11) DEFAULT NULL,
+  `ClosedAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pago`
+--
+
+INSERT INTO `pago` (`id_pago`, `id_contrato`, `fecha`, `importe`, `nro_pago`, `detalle`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
+(1, 4, '2025-09-25', 25000.00, 1, 'mes1', 1, 1, '2025-09-25 02:25:42', NULL, NULL),
+(2, 5, '2025-09-25', 25000.00, 1, 'pago mes 1', 1, 1, '2025-09-25 02:35:43', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -190,7 +203,7 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `email`, `password_hash`, `nombre`, `apellido`, `avatar_path`, `rol`, `created_at`, `updated_at`) VALUES
-(1, 'admin@inmobiliaria.com', 'AQAAAAIAAYagAAAAEFqmz1vIJVCDnX3Tuy5MArsDBkZZ6l/dsUI3NuQXnAoRVpN3wan/153ShiTbaL4XEg==', 'Admin', 'Principal', '', 'Admin', '2025-09-19 18:06:26', '2025-09-19 18:06:26'),
+(1, 'admin@inmobiliaria.com', 'AQAAAAIAAYagAAAAEFqmz1vIJVCDnX3Tuy5MArsDBkZZ6l/dsUI3NuQXnAoRVpN3wan/153ShiTbaL4XEg==', 'Lucas', 'Fernandez', '/uploads/avatars/2fc8de36-ef5d-4ccd-97bf-4d8ee5e07280.png', 'Admin', '2025-09-19 18:06:26', '2025-09-22 13:03:27'),
 (2, 'empleado1@inmobiliaria.com', 'AQAAAAIAAYagAAAAEHLngQzyvoKjl2GtJgY2s84Wnq/YYFPnuUdGuE/wAw2Jx7XPRaXKKp/8WvZ/T/NnOw==', 'Jorge', 'Mendez', '', 'Empleado', '2025-09-19 18:08:58', '2025-09-19 18:08:58');
 
 --
@@ -255,7 +268,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
@@ -273,7 +286,7 @@ ALTER TABLE `inquilino`
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`

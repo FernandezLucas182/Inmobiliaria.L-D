@@ -1,0 +1,44 @@
+@model IEnumerable<InmobiliariaMVC.Models.Pago>
+
+@{
+    ViewBag.Title = "Pagos por Contrato";
+}
+
+<h2>Pagos del contrato de @ViewBag.Inquilino</h2>
+
+<div class="mb-3">
+    <a class="btn btn-secondary" href="@Url.Action("BuscarPorContrato", "Pagos")">🔙 Volver a búsqueda</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nro Pago</th>
+            <th>Fecha</th>
+            <th>Detalle</th>
+            <th>Importe</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var pago in Model)
+    {
+        <tr>
+            <td>@pago.nro_pago</td>
+            <td>@pago.fecha.ToString("dd/MM/yyyy")</td>
+            <td>@pago.detalle</td>
+            <td>@pago.importe</td>
+            <td>@(pago.estado ? "Activo" : "Anulado")</td>
+            <td>
+                @if (pago.estado)
+                {
+                    <a asp-action="Edit" asp-route-id="@pago.id_pago" class="btn btn-sm btn-primary">Editar</a>
+                     <a asp-action="Cerrar" asp-route-id="@pago.id_pago" class="btn btn-sm btn-primary">Anular</a>
+                }
+                 <a asp-action="Details" asp-route-id="@pago.id_pago" class="btn btn-sm btn-primary">Detalle</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -23,7 +23,7 @@
         <dd class="col-sm-10">@Model.fecha.ToString("dd/MM/yyyy")</dd>
     </dl>
 
-    <form asp-action="CerrarConfirmed" method="post">
+    <form asp-action="Cancelar" method="post">
         <input type="hidden" asp-for="id_pago" />
         <button type="submit" class="btn btn-danger">Anular Pago</button>
         <a class="btn btn-secondary" href="@Url.Action("Index")">Cancelar</a>

@@ -39,6 +39,7 @@
                 <td>@(c.ClosedAt.HasValue ? c.ClosedAt.Value.ToShortDateString() : "-")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@c.id_contrato" class="btn btn-sm btn-primary">Editar</a>
+                    <a asp-action="Renovar" asp-route-id="@c.id_contrato" class="btn btn-sm btn-success">Renovar</a>
                     
                     @if (c.estado)
                     {
@@ -47,7 +48,17 @@
                         </form>
                     }
                     <a asp-action="Details" asp-route-id="@c.id_contrato" class="btn btn-sm btn-info">Detalles</a>
-                    <a asp-action="Delete" asp-route-id="@c.id_contrato" class="btn btn-sm btn-danger">Eliminar</a>
+                    
+                    @if (User.IsInRole("Admin")){
+                        <form asp-action="DeleteConfirmed" asp-route-id="@c.id_contrato" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Seguro que quieres eliminar este contrato?');">Eliminar</button>
+                        </form>
+                    }
+                    
+                    
+
+                    
                 </td>
             </tr>
         }

@@ -11,12 +11,23 @@
 
 <table class="table">
     <thead>
-        <tr><th>Apellido</th><th>Nombre</th><th>Email</th><th>Rol</th><th></th></tr>
+        <tr>
+            <th>Avatar</th>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
         @foreach(var u in Model)
         {
             <tr>
+                <td>
+                    <img src="@Url.Content(string.IsNullOrEmpty(u.avatar_path) ? "/images/imgdef.png" : u.avatar_path)"
+                        alt="Avatar" width="50" height="50" />
+                </td>
                 <td>@u.apellido</td>
                 <td>@u.nombre</td>
                 <td>@u.email</td>

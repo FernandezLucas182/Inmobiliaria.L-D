@@ -1,23 +1,24 @@
 @model InmobiliariaMVC.Models.Contrato
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 @{
-    ViewData["Title"] = "Editar Contrato";
+    ViewData["Title"] = "Renovar Contrato";
 }
 
-<h2>Editar Contrato</h2>
+<h2>Renovar Contrato</h2>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="id_contrato" />
-
-    <div asp-validation-summary="All"></div>
+<form asp-action="Renovar" asp-controller="Contrato" method="post">
+    @Html.AntiForgeryToken()   
+    <input type="hidden" asp-for="id_inquilino" />
+    <input type="hidden" asp-for="id_inmueble" />
 
     <div class="form-group">
         <label>Inquilino</label>
-        <select asp-for="id_inquilino" asp-items="ViewBag.Inquilinos" class="form-control"></select>
+        <input type="text" value="@Model.Inquilino?.nombre @Model.Inquilino?.apellido" class="form-control" disabled />
     </div>
 
     <div class="form-group">
         <label>Inmueble</label>
-        <select asp-for="id_inmueble" asp-items="ViewBag.Inmuebles" class="form-control"></select>
+        <input type="text" value="@Model.Inmueble?.direccion" class="form-control" disabled />
     </div>
 
     <div class="form-group">
@@ -35,6 +36,8 @@
         <input asp-for="monto" class="form-control" />
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button type="submit" class="btn btn-success">Guardar Renovación</button>
     <a asp-action="Index" class="btn btn-secondary mt-3">Volver</a>
 </form>
+
+

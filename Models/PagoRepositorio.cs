@@ -14,15 +14,23 @@ namespace InmobiliariaMVC.Models
             using var connection = new MySqlConnection(connectionString);
 
             string sql = @"
-                SELECT p.id_pago, p.id_contrato, p.fecha, p.importe, p.nro_pago, p.detalle, p.estado,
-                       p.CreatedByUserId, p.CreatedAt, p.ClosedByUserId, p.ClosedAt,
-                       u1.Nombre AS CreatedByNombre, u1.Apellido AS CreatedByApellido,
-                       u2.Nombre AS ClosedByNombre, u2.Apellido AS ClosedByApellido,
-                       c.monto, c.fecha_desde, c.fecha_hasta
-                FROM pago p
-                INNER JOIN contrato c ON p.id_contrato = c.id_contrato
-                LEFT JOIN usuario u1 ON p.CreatedByUserId = u1.id_usuario
-                LEFT JOIN usuario u2 ON p.ClosedByUserId = u2.id_usuario";
+SELECT 
+    p.id_pago, p.id_contrato, p.fecha, p.importe, p.nro_pago, p.detalle, p.estado,
+    p.CreatedByUserId, p.CreatedAt, p.ClosedByUserId, p.ClosedAt,
+    u1.Nombre AS CreatedByNombre, u1.Apellido AS CreatedByApellido,
+    u2.Nombre AS ClosedByNombre, u2.Apellido AS ClosedByApellido,
+    c.monto, c.fecha_desde, c.fecha_hasta,
+    i.id_inquilino, i.nombre AS InquilinoNombre, i.apellido AS InquilinoApellido,
+    im.id_inmueble, im.direccion AS InmuebleDireccion,
+    t.id_tipo AS TipoId, t.nombre AS TipoNombre
+FROM pago p
+INNER JOIN contrato c ON p.id_contrato = c.id_contrato
+INNER JOIN inquilino i ON c.id_inquilino = i.id_inquilino
+INNER JOIN inmueble im ON c.id_inmueble = im.id_inmueble
+INNER JOIN tipo t ON im.id_tipo = t.id_tipo
+LEFT JOIN usuario u1 ON p.CreatedByUserId = u1.id_usuario
+LEFT JOIN usuario u2 ON p.ClosedByUserId = u2.id_usuario
+ORDER BY p.id_pago;";
 
             using var command = new MySqlCommand(sql, connection);
             connection.Open();
@@ -39,16 +47,23 @@ namespace InmobiliariaMVC.Models
         {
             using var connection = new MySqlConnection(connectionString);
             string sql = @"
-                SELECT p.id_pago, p.id_contrato, p.fecha, p.importe, p.nro_pago, p.detalle, p.estado,
-                       p.CreatedByUserId, p.CreatedAt, p.ClosedByUserId, p.ClosedAt,
-                       u1.Nombre AS CreatedByNombre, u1.Apellido AS CreatedByApellido,
-                       u2.Nombre AS ClosedByNombre, u2.Apellido AS ClosedByApellido,
-                       c.monto, c.fecha_desde, c.fecha_hasta
-                FROM pago p
-                INNER JOIN contrato c ON p.id_contrato = c.id_contrato
-                LEFT JOIN usuario u1 ON p.CreatedByUserId = u1.id_usuario
-                LEFT JOIN usuario u2 ON p.ClosedByUserId = u2.id_usuario
-                WHERE p.id_pago=@id";
+SELECT 
+    p.id_pago, p.id_contrato, p.fecha, p.importe, p.nro_pago, p.detalle, p.estado,
+    p.CreatedByUserId, p.CreatedAt, p.ClosedByUserId, p.ClosedAt,
+    u1.Nombre AS CreatedByNombre, u1.Apellido AS CreatedByApellido,
+    u2.Nombre AS ClosedByNombre, u2.Apellido AS ClosedByApellido,
+    c.monto, c.fecha_desde, c.fecha_hasta,
+    i.id_inquilino, i.nombre AS InquilinoNombre, i.apellido AS InquilinoApellido,
+    im.id_inmueble, im.direccion AS InmuebleDireccion,
+    t.id_tipo AS TipoId, t.nombre AS TipoNombre
+FROM pago p
+INNER JOIN contrato c ON p.id_contrato = c.id_contrato
+INNER JOIN inquilino i ON c.id_inquilino = i.id_inquilino
+INNER JOIN inmueble im ON c.id_inmueble = im.id_inmueble
+INNER JOIN tipo t ON im.id_tipo = t.id_tipo
+LEFT JOIN usuario u1 ON p.CreatedByUserId = u1.id_usuario
+LEFT JOIN usuario u2 ON p.ClosedByUserId = u2.id_usuario
+WHERE p.id_pago=@id;";
 
             using var command = new MySqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", id);
@@ -66,31 +81,38 @@ namespace InmobiliariaMVC.Models
         {
             var lista = new List<Pago>();
             using var connection = new MySqlConnection(connectionString);
-            string sql = @"SELECT p.*, c.id_contrato 
-                   FROM pago p
-                   INNER JOIN contrato c ON p.id_contrato = c.id_contrato
-                   WHERE p.id_contrato = @idContrato";
+
+            string sql = @"
+SELECT 
+     p.id_pago, p.id_contrato, p.fecha, p.importe, p.nro_pago, p.detalle, p.estado,
+    p.CreatedByUserId, p.CreatedAt, p.ClosedByUserId, p.ClosedAt,
+    u1.Nombre AS CreatedByNombre, u1.Apellido AS CreatedByApellido,
+    u2.Nombre AS ClosedByNombre, u2.Apellido AS ClosedByApellido,
+    c.monto, c.fecha_desde, c.fecha_hasta,
+    i.id_inquilino, i.nombre AS InquilinoNombre, i.apellido AS InquilinoApellido,
+    im.id_inmueble, im.direccion AS InmuebleDireccion,
+    t.id_tipo AS TipoId, t.nombre AS TipoNombre
+FROM pago p
+INNER JOIN contrato c ON p.id_contrato = c.id_contrato
+INNER JOIN inquilino i ON c.id_inquilino = i.id_inquilino
+INNER JOIN inmueble im ON c.id_inmueble = im.id_inmueble
+INNER JOIN tipo t ON im.id_tipo = t.id_tipo
+LEFT JOIN usuario u1 ON p.CreatedByUserId = u1.id_usuario
+LEFT JOIN usuario u2 ON p.ClosedByUserId = u2.id_usuario
+WHERE p.id_contrato = @idContrato
+ORDER BY p.nro_pago;";
+
             using var command = new MySqlCommand(sql, connection);
             command.Parameters.AddWithValue("@idContrato", idContrato);
             connection.Open();
-            var reader = command.ExecuteReader();
+            using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                var pago = new Pago
-                {
-                    id_pago = reader.GetInt32("id_pago"),
-                    id_contrato = reader.GetInt32("id_contrato"),
-                    nro_pago = reader.GetInt32("nro_pago"),
-                    fecha = reader.GetDateTime("fecha"),
-                    detalle = reader.GetString("detalle"),
-                    importe = reader.GetInt32("importe"),
-                    estado = reader.GetBoolean("estado"),
-                };
-                lista.Add(pago);
+                lista.Add(MapPago(reader));
             }
+
             return lista;
         }
-
 
         #endregion
 
@@ -100,9 +122,9 @@ namespace InmobiliariaMVC.Models
         {
             using var connection = new MySqlConnection(connectionString);
             string sql = @"
-                INSERT INTO pago (id_contrato, fecha, importe, nro_pago, detalle, estado, CreatedByUserId, CreatedAt)
-                VALUES (@id_contrato, @fecha, @importe, @nro_pago, @detalle, 1, @CreatedByUserId, NOW());
-                SELECT LAST_INSERT_ID();";
+INSERT INTO pago (id_contrato, fecha, importe, nro_pago, detalle, estado, CreatedByUserId, CreatedAt)
+VALUES (@id_contrato, @fecha, @importe, @nro_pago, @detalle, 1, @CreatedByUserId, NOW());
+SELECT LAST_INSERT_ID();";
 
             using var command = new MySqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id_contrato", pago.id_contrato);
@@ -143,7 +165,6 @@ namespace InmobiliariaMVC.Models
 
         public int Baja(int id, int userId)
         {
-            // Baja lógica: llama a CerrarPago
             CerrarPago(id, userId);
             return 1;
         }
@@ -181,11 +202,28 @@ namespace InmobiliariaMVC.Models
                         nombre = reader.IsDBNull(reader.GetOrdinal("ClosedByNombre")) ? "" : reader.GetString("ClosedByNombre"),
                         apellido = reader.IsDBNull(reader.GetOrdinal("ClosedByApellido")) ? "" : reader.GetString("ClosedByApellido")
                     },
-                Contrato = reader.IsDBNull(reader.GetOrdinal("monto")) ? null : new Contrato
+                Contrato = new Contrato
                 {
+                    id_contrato = reader.GetInt32("id_contrato"),
                     monto = reader.GetDecimal("monto"),
                     fecha_inicio = reader.GetDateTime("fecha_desde"),
-                    fecha_fin = reader.GetDateTime("fecha_hasta")
+                    fecha_fin = reader.GetDateTime("fecha_hasta"),
+                    Inquilino = new Inquilino
+                    {
+                        id_inquilino = reader.GetInt32("id_inquilino"),
+                        nombre = reader.GetString("InquilinoNombre"),
+                        apellido = reader.GetString("InquilinoApellido")
+                    },
+                    Inmueble = new Inmueble
+                    {
+                        id_inmueble = reader.GetInt32("id_inmueble"),
+                        direccion = reader.GetString("InmuebleDireccion"),
+                        Tipo = new Tipo
+                        {
+                            id_tipo = reader.GetInt32("TipoId"),
+                            nombre = reader.GetString("TipoNombre")
+                        }
+                    }
                 }
             };
         }
