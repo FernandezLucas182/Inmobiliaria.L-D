@@ -29,39 +29,39 @@ namespace InmobiliariaMVC.Controllers
 
         #region CREATE
         public IActionResult Create(Usuario model, string password)
-{
-    if (!ModelState.IsValid) return View(model);
+        {
+            if (!ModelState.IsValid) return View(model);
 
-    // 👇 Imagen por defecto si no tiene avatar
-    if (string.IsNullOrEmpty(model.avatar_path))
-    {
-        model.avatar_path = "/images/imgdef.png";
-    }
+            // 👇 Imagen por defecto si no tiene avatar
+            if (string.IsNullOrEmpty(model.avatar_path))
+            {
+                model.avatar_path = "/images/imgdef.png";
+            }
 
-    if (string.IsNullOrWhiteSpace(password))
-    {
-        ModelState.AddModelError("", "La contraseña es obligatoria.");
-        return View(model);
-    }
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("", "La contraseña es obligatoria.");
+                return View(model);
+            }
 
-    var existing = _repo.GetByEmail(model.email);
-    if (existing != null)
-    {
-        ModelState.AddModelError("", "Ya existe un usuario con ese email.");
-        return View(model);
-    }
+            var existing = _repo.GetByEmail(model.email);
+            if (existing != null)
+            {
+                ModelState.AddModelError("", "Ya existe un usuario con ese email.");
+                return View(model);
+            }
 
-    var ph = _pwdHasher.HashPassword(model, password);
-    model.password_hash = ph;
+            var ph = _pwdHasher.HashPassword(model, password);
+            model.password_hash = ph;
 
-    _repo.Create(model);
-    return RedirectToAction("Index");
-}
+            _repo.Create(model);
+            return RedirectToAction("Index");
+        }
         #endregion
- 
+
 
         [Authorize(Roles = "Admin")]
-        [HttpPost]      
+        [HttpPost]
         public IActionResult Edit(Usuario model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -111,7 +111,7 @@ namespace InmobiliariaMVC.Controllers
             if (usuario == null) return NotFound();
             return View(usuario);
         }
-
+        #region ActualizarPerfil
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ActualizarPerfil(Usuario model, string NuevaContraseña, IFormFile Avatar, bool EliminarAvatar)
@@ -128,12 +128,13 @@ namespace InmobiliariaMVC.Controllers
             // Avatar
             if (EliminarAvatar)
             {
-                if (!string.IsNullOrEmpty(usuario.avatar_path))
+                if (!string.IsNullOrEmpty(usuario.avatar_path) && usuario.avatar_path.StartsWith("/uploads/"))
                 {
-                    var rutaAvatar = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", usuario.avatar_path);
+                    var rutaAvatar = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", usuario.avatar_path.TrimStart('/'));
                     if (System.IO.File.Exists(rutaAvatar)) System.IO.File.Delete(rutaAvatar);
                 }
                 usuario.avatar_path = "/images/imgdef.png";
+
             }
 
             if (Avatar != null)
@@ -144,7 +145,7 @@ namespace InmobiliariaMVC.Controllers
                 {
                     Avatar.CopyTo(stream);
                 }
-                usuario.avatar_path = fileName;
+                usuario.avatar_path = "/uploads/" + fileName;
             }
 
             // Contraseña
@@ -158,4 +159,5 @@ namespace InmobiliariaMVC.Controllers
             return RedirectToAction("MiPerfil");
         }
     }
+    #endregion
 }

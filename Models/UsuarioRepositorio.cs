@@ -49,7 +49,7 @@ namespace InmobiliariaMVC.Models
             while (r.Read()) list.Add(Map(r));
             return list;
         }
-
+        #region CREATE
         public int Create(Usuario u)
         {
             using var conn = new MySqlConnection(connectionString);
@@ -61,14 +61,18 @@ namespace InmobiliariaMVC.Models
             cmd.Parameters.AddWithValue("@password_hash", u.password_hash);
             cmd.Parameters.AddWithValue("@nombre", u.nombre ?? "");
             cmd.Parameters.AddWithValue("@apellido", u.apellido ?? "");
-            cmd.Parameters.AddWithValue("@avatar_path", u.avatar_path ?? "");
+            
+            var avatar = string.IsNullOrEmpty(u.avatar_path) ? "/images/imgdef.png" : u.avatar_path;
+
+            cmd.Parameters.AddWithValue("@avatar_path", u.avatar_path);
             cmd.Parameters.AddWithValue("@rol", u.rol ?? "Empleado");
             conn.Open();
             var id = Convert.ToInt32(cmd.ExecuteScalar());
             u.id_usuario = id;
             return id;
         }
-
+        #endregion
+        #region UPDATE
         public void Update(Usuario u)
         {
             using var conn = new MySqlConnection(connectionString);
@@ -83,7 +87,8 @@ namespace InmobiliariaMVC.Models
             conn.Open();
             cmd.ExecuteNonQuery();
         }
-
+        #endregion
+        #region UpdatePassword
         public void UpdatePassword(int id, string passwordHash)
         {
             using var conn = new MySqlConnection(connectionString);
@@ -94,7 +99,8 @@ namespace InmobiliariaMVC.Models
             conn.Open();
             cmd.ExecuteNonQuery();
         }
-
+        #endregion
+        #region DELETE
         public void Delete(int id)
         {
             using var conn = new MySqlConnection(connectionString);
@@ -104,7 +110,8 @@ namespace InmobiliariaMVC.Models
             conn.Open();
             cmd.ExecuteNonQuery();
         }
-
+        #endregion
+        #region Map
         private Usuario Map(MySqlDataReader r)
         {
             return new Usuario
@@ -120,6 +127,7 @@ namespace InmobiliariaMVC.Models
                 updated_at = r["updated_at"] != DBNull.Value ? Convert.ToDateTime(r["updated_at"]) : DateTime.MinValue
             };
         }
+#endregion
 
     }
 }
