@@ -8,6 +8,7 @@
 
 <form asp-action="Renovar" asp-controller="Contrato" method="post">
     @Html.AntiForgeryToken()   
+    <input type="hidden" asp-for="id_contrato" />
     <input type="hidden" asp-for="id_inquilino" />
     <input type="hidden" asp-for="id_inmueble" />
 

@@ -148,5 +148,69 @@ namespace InmobiliariaMVC.Controllers
             repoContrato.Baja(id);
             return RedirectToAction(nameof(Index));
         }
+        // GET: Contrato/Renovar/5
+        public IActionResult Renovar(int id)
+        {
+            var contrato = repoContrato.ObtenerPorId(id);
+            if (contrato == null) return NotFound();
+
+            // Cargo la vista con los datos actuales, pero listo para editar fechas/nuevo monto
+            return View(contrato);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Renovar(int id, Contrato contrato)
+        {
+            if (id != contrato.id_contrato) return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                // Opción 1: Modificar el mismo contrato (actualizando fechas/monto).
+                repoContrato.Modificacion(contrato);
+
+                // Opción 2: Generar un contrato nuevo como "renovación"
+                // repoContrato.Alta(contrato, userId);
+
+                TempData["Success"] = $"Contrato #{id} renovado correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(contrato);
+        }
+        // ------------------- INFORMES / FILTROS -------------------
+
+        // 1) Contratos vigentes por fecha
+        [HttpGet]
+        public IActionResult Vigentes(DateTime desde, DateTime hasta)
+        {
+            var contratos = repoContrato.ObtenerTodos()
+                .Where(c => c.fecha_inicio >= desde && c.fecha_fin <= hasta && c.estado)
+                .ToList();
+
+            return View("Index", contratos); // Reutilizo la misma vista Index
+        }
+
+        // 2) Contratos por inmueble
+        [HttpGet]
+        public IActionResult PorInmueble(int inmuebleId)
+        {
+            var contratos = repoContrato.ObtenerTodos()
+                .Where(c => c.id_inmueble == inmuebleId)
+                .ToList();
+
+            return View("Index", contratos);
+        }
+        // 3) Contratos que vencen en X días
+        [HttpGet]
+        public IActionResult PorVencimiento(int dias)
+        {
+            var fechaLimite = DateTime.Now.AddDays(dias);
+            var contratos = repoContrato.ObtenerTodos()
+                .Where(c => c.fecha_fin <= fechaLimite && c.estado)
+                .ToList();
+
+            return View("Index", contratos);
+        }
+
     }
 }

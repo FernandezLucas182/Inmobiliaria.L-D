@@ -4,24 +4,52 @@
     ViewData["Title"] = "Inmuebles";
 }
 
-<h2>Listado de Inmuebles</h2>
+<h2>
+    @if (ViewBag.FiltroDisponibles != null)
+    {
+        @:Inmuebles Disponibles entre @ViewBag.Desde.ToShortDateString() y @ViewBag.Hasta.ToShortDateString()
+    }
+    else
+    {
+        @:Listado de Inmuebles
+    }
+</h2>
 
 <p>
-    <a class="btn btn-primary" asp-action="Create">Nuevo Inmueble</a>
+    
+    @if (ViewBag.FiltroDisponibles != null)
+    {
+        <a class="btn btn-secondary" asp-action="Index">Volver al listado principal</a>
+    }
 </p>
 
-
-
+<!-- Filtro por tipo (ya existente) -->
 <form method="get" asp-action="Index" class="mb-3">
     <label for="filtro">Filtrar:</label>
-    <select name="filtro" id="filtro" asp-items="ViewBag.Filtros" 
+    <select name="filtro" id="filtro" asp-items="ViewBag.Filtros"
             class="form-select d-inline w-auto" onchange="this.form.submit()">
+    </select>
+</form>
+
+<form method="get" asp-action="Index" class="mb-3">
+<!-- Filtro por propietario -->
+    <label for="id_propietario" class="ms-3">Propietario:</label>
+    <select name="id_propietario" id="id_propietario" class="form-select d-inline w-auto" asp-items="ViewBag.Propietarios" onchange="this.form.submit()">
+        <option value="">Todos</option>
     </select>
 </form>
 
 
 
-<table class="table table-striped">
+<!-- Filtro por disponibilidad -->
+<form asp-action="InmueblesDisponibles" method="get" class="d-inline">
+    <label>Disponibles entre:</label>
+    <input type="date" name="desde" required />
+    <input type="date" name="hasta" required />
+    <button type="submit" class="btn btn-outline-success">Consultar</button>
+</form>
+
+<table class="table table-striped mt-3">
     <thead>
         <tr>
             <th>Dirección</th>
@@ -75,3 +103,8 @@
     }
     </tbody>
 </table>
+
+<div class="text-center">
+    <a asp-action="Create" class="btn btn-success btn-create">Nuevo Inmueble</a>
+</div>
+

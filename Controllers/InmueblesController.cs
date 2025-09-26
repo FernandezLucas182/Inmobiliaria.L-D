@@ -8,57 +8,64 @@ namespace InmobiliariaMVC.Controllers
     public class InmuebleController : Controller
     {
         private readonly InmuebleRepositorio repositorio = new InmuebleRepositorio();
+        private readonly ContratoRepositorio repoContrato = new ContratoRepositorio();
+
 
 
 
         // GET: Inmueble
         // GET: Inmueble
-public IActionResult Index(string? filtro, bool? disponibles)
-{
-    List<Inmueble> lista;
+        public IActionResult Index(string? filtro, bool? disponibles, int? id_propietario)
+        {
+            List<Inmueble> lista;
 
-    // --- Filtrar por parámetro "disponibles" (true/false) ---
-    if (disponibles.HasValue)
-    {
-        if (disponibles.Value)
-        {
-            lista = repositorio.ObtenerTodos().Where(x => x.estado).ToList();
-            filtro = "disponibles"; // guardamos el filtro aplicado
-        }
-        else
-        {
-            lista = repositorio.ObtenerTodos().Where(x => !x.estado).ToList();
-            filtro = "inactivos"; // guardamos el filtro aplicado
-        }
-    }
-    // --- Filtrar por parámetro "filtro" (string) ---
-    else if (!string.IsNullOrEmpty(filtro))
-    {
-        switch (filtro)
-        {
-            case "disponibles":
-                lista = repositorio.ObtenerTodos().Where(x => x.estado).ToList();
-                break;
-            case "inactivos":
-                lista = repositorio.ObtenerTodos().Where(x => !x.estado).ToList();
-                break;
-            case "sinContrato":
-                lista = repositorio.ObtenerSinContrato();
-                break;
-            default:
+            // --- Filtrar por parámetro "disponibles" (true/false) ---
+            if (disponibles.HasValue)
+            {
+                if (disponibles.Value)
+                {
+                    lista = repositorio.ObtenerTodos().Where(x => x.estado).ToList();
+                    filtro = "disponibles"; // guardamos el filtro aplicado
+                }
+                else
+                {
+                    lista = repositorio.ObtenerTodos().Where(x => !x.estado).ToList();
+                    filtro = "inactivos"; // guardamos el filtro aplicado
+                }
+            }
+            // --- Filtrar por parámetro "filtro" (string) ---
+            else if (!string.IsNullOrEmpty(filtro))
+            {
+                switch (filtro)
+                {
+                    case "disponibles":
+                        lista = repositorio.ObtenerTodos().Where(x => x.estado).ToList();
+                        break;
+                    case "inactivos":
+                        lista = repositorio.ObtenerTodos().Where(x => !x.estado).ToList();
+                        break;
+                    case "sinContrato":
+                        lista = repositorio.ObtenerSinContrato();
+                        break;
+                    default:
+                        lista = repositorio.ObtenerTodos();
+                        filtro = ""; // por si viene algo raro
+                        break;
+                }
+            }
+            else
+            {
                 lista = repositorio.ObtenerTodos();
-                filtro = ""; // por si viene algo raro
-                break;
-        }
-    }
-    else
-    {
-        lista = repositorio.ObtenerTodos();
-        filtro = ""; // sin filtro = todos
-    }
+                filtro = ""; // sin filtro = todos
+            }
+             // --- Filtrar por propietario si se seleccionó alguno ---
+            if (id_propietario.HasValue)
+            {
+              lista = lista.Where(x => x.Propietario != null && x.Propietario.id_propietario == id_propietario.Value).ToList();
+            }
 
-    // 👉 Armar lista de filtros para el combo
-    var filtros = new List<SelectListItem>
+            //  Armar lista de filtros para el combo
+            var filtros = new List<SelectListItem>
     {
         new SelectListItem { Value = "", Text = "-- Todos --" },
         new SelectListItem { Value = "disponibles", Text = "Disponibles" },
@@ -66,11 +73,16 @@ public IActionResult Index(string? filtro, bool? disponibles)
         new SelectListItem { Value = "sinContrato", Text = "Sin contrato" }
     };
 
-    // 👉 Cargar en ViewBag con el valor actual seleccionado
-    ViewBag.Filtros = new SelectList(filtros, "Value", "Text", filtro);
+            // Cargar en ViewBag con el valor actual seleccionado
+            ViewBag.Filtros = new SelectList(filtros, "Value", "Text", filtro);
 
-    return View(lista);
-}
+            // --- Combo de propietarios ---
+            var repoPropietario = new PropietarioRepositorio();
+            var propietarios = repoPropietario.ObtenerTodos();
+            ViewBag.Propietarios = new SelectList(propietarios, "id_propietario", "apellido", id_propietario);
+
+            return View(lista);
+        }
 
 
 
@@ -228,7 +240,23 @@ public IActionResult Index(string? filtro, bool? disponibles)
 
             return BadRequest();
         }
+   public IActionResult InmueblesDisponibles(DateTime desde, DateTime hasta)
+{
+    var contratos = repoContrato.ObtenerTodos()
+        .Where(c => (c.fecha_inicio <= hasta && c.fecha_fin >= desde))
+        .Select(c => c.id_inmueble)
+        .ToList();
 
+    var inmueblesDisponibles = repositorio.ObtenerTodos()
+        .Where(i => !contratos.Contains(i.id_inmueble))
+        .ToList();
+
+    ViewBag.FiltroDisponibles = true;
+    ViewBag.Desde = desde;
+    ViewBag.Hasta = hasta;
+
+    return View("Index", inmueblesDisponibles);
+}
 
     }
 }

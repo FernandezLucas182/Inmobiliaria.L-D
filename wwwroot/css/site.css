@@ -1,34 +1,61 @@
-html {
-  font-size: 14px;
+/* ===== PALETA VERDE AZULADA ===== */
+
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+main {
+    flex: 1;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+footer {
+    margin-top: 500;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+/* Navbar */
+.navbar {
+    background-color: #2f3e46 !important;
+}
+.navbar .nav-link,
+.navbar .navbar-brand {
+    color: #cad2c5 !important; /* texto claro */
+}
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: #84a98c !important; /* verde suave en hover */
 }
 
-body {
-  margin-bottom: 60px;
+/* Botones */
+.btn-primary {
+    background-color: #354f52 !important;
+    border-color: #354f52 !important;
+    color: #fff !important;
+}
+.btn-primary:hover {
+    background-color: #52796f !important;
+    border-color: #52796f !important;
 }
 
-
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Botones uniformes en tablas */
+table .btn {
+    background-color: #354f52 !important;
+    border-color: #354f52 !important;
+    color: #fff !important;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+table .btn:hover {
+    background-color: #52796f !important; /* tono más claro al pasar el mouse */
+    border-color: #52796f !important;
+}
+.table td .btn,
+.table td form {
+    display: inline-flex;
+    flex-wrap: nowrap;   /* evita salto de línea */
+    white-space: nowrap; /* evita cortar texto */
 }
 
+.table td {
+    white-space: nowrap;
+}

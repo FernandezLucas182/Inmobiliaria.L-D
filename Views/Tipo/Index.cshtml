@@ -1,0 +1,75 @@
+@model IEnumerable<InmobiliariaMVC.Models.Tipo>
+
+@{
+    ViewData["Title"] = "Tipos de Inmuebles";
+}
+
+<h2>Tipos de Inmuebles</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nuevo Tipo</a>
+</p>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tipo in Model)
+        {
+            <tr>
+                <td>@tipo.id_tipo</td>
+                <td>@tipo.nombre</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@tipo.id_tipo" class="btn btn-sm btn-warning">Editar</a>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@tipo.id_tipo" data-nombre="@tipo.nombre">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="DeleteConfirmed">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de eliminar el tipo <strong id="tipoNombre"></strong>?</p>
+                    <input type="hidden" id="tipoId" name="id" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal')
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget
+            var id = button.getAttribute('data-id')
+            var nombre = button.getAttribute('data-nombre')
+
+            var modalTitle = deleteModal.querySelector('#tipoNombre')
+            var modalInput = deleteModal.querySelector('#tipoId')
+
+            modalTitle.textContent = nombre
+            modalInput.value = id
+        })
+    </script>
+}
