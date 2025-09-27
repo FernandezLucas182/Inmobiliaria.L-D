@@ -6,7 +6,7 @@ namespace InmobiliariaMVC.Models
     {
         private readonly string connectionString = "server=localhost;port=3306;database=inmobiliaria;uid=root;";
 
-        // 📌 Alta (Insertar)
+        
         public int Alta(Inquilino inquilino)
         {
             int idInsertado = -1;
@@ -31,8 +31,6 @@ namespace InmobiliariaMVC.Models
             return idInsertado;
         }
 
-
-        // 📌 Obtener Todos
         public IList<Inquilino> ObtenerTodos()
         {
             var lista = new List<Inquilino>();
@@ -62,7 +60,7 @@ namespace InmobiliariaMVC.Models
             return lista;
         }
 
-        // 📌 Obtener Por Id
+        
         public Inquilino? ObtenerPorId(int id)
         {
             Inquilino? inquilino = null;
@@ -93,7 +91,7 @@ namespace InmobiliariaMVC.Models
             return inquilino;
         }
 
-        // 📌 Modificar (Update)
+        
         public int Modificar(Inquilino inquilino)
         {
             int res = -1;
@@ -118,7 +116,7 @@ namespace InmobiliariaMVC.Models
             return res;
         }
 
-        // 📌 Baja (Delete)
+        
         public int Baja(int id)
         {
             int res = -1;

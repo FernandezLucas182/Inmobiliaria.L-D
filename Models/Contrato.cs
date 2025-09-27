@@ -31,8 +31,8 @@ namespace InmobiliariaMVC.Models
     public int? ClosedByUserId { get; set; }
     public DateTime? ClosedAt { get; set; }
 
-    public Usuario? CreatedByUser { get; set; }   // ← agregado
-    public Usuario? ClosedByUser { get; set; }    // ← agregado
+    public Usuario? CreatedByUser { get; set; }  
+    public Usuario? ClosedByUser { get; set; }    
 
     public Inmueble? Inmueble { get; set; }
     public Inquilino? Inquilino { get; set; }

@@ -13,7 +13,7 @@ namespace InmobiliariaMVC.Controllers
 
 
 
-        // GET: Inmueble
+       
         // GET: Inmueble
         public IActionResult Index(string? filtro, bool? disponibles, int? id_propietario)
         {

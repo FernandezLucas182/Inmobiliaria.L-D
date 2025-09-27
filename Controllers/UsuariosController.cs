@@ -32,7 +32,7 @@ namespace InmobiliariaMVC.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            // 👇 Imagen por defecto si no tiene avatar
+            // Imagen por defecto si no tiene avatar
             if (string.IsNullOrEmpty(model.avatar_path))
             {
                 model.avatar_path = "/images/imgdef.png";

@@ -56,10 +56,10 @@ namespace InmobiliariaMVC.Models
                 return lista;
             }
 
-            // Métodos Crear, Editar, Eliminar vendrían después
+          
         }
 
-        //metodo obtener disponibles:
+       
         public List<Inmueble> ObtenerDisponibles()
 {
     var lista = new List<Inmueble>();
@@ -121,7 +121,7 @@ public List<Inmueble> ObtenerSinContrato()
             INNER JOIN propietario p ON i.id_propietario = p.id_propietario
             INNER JOIN tipo t ON i.id_tipo = t.id_tipo
             LEFT JOIN contrato c ON i.id_inmueble = c.id_inmueble
-            WHERE c.id_contrato IS NULL;";   // Solo los que no tienen contrato
+            WHERE c.id_contrato IS NULL;";  
 
         using (var command = new MySqlCommand(sql, connection))
         {
@@ -236,11 +236,11 @@ public List<Inmueble> ObtenerSinContrato()
                     command.Parameters.AddWithValue("@id_inmueble", inmueble.id_inmueble);
 
                     connection.Open();
-                    res = command.ExecuteNonQuery(); // devuelve filas afectadas
+                    res = command.ExecuteNonQuery(); 
                     connection.Close();
                 }
             }
-            return res; // si devuelve 1 significa que se actualizó bien
+            return res; 
         }
         public Inmueble? ObtenerPorId(int id)
         {

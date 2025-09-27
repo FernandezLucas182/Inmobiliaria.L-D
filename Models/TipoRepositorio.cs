@@ -7,7 +7,7 @@ namespace InmobiliariaMVC.Models
     {
         private readonly string connectionString = "server=localhost;user=root;database=inmobiliaria;";
 
-        // 🔹 Obtener todos los tipos de inmuebles
+        
         public List<Tipo> ObtenerTodos()
         {
             var lista = new List<Tipo>();
@@ -36,7 +36,7 @@ namespace InmobiliariaMVC.Models
             return lista;
         }
 
-        // 🔹 Obtener tipo por ID
+      
         public Tipo ObtenerPorId(int id)
         {
             Tipo? tipo = null;
@@ -66,7 +66,7 @@ namespace InmobiliariaMVC.Models
             return tipo!;
         }
 
-        // 🔹 Crear un nuevo tipo
+        
         public int Crear(Tipo tipo)
         {
             int nuevoId = 0;
@@ -88,7 +88,7 @@ namespace InmobiliariaMVC.Models
             return nuevoId;
         }
 
-        // 🔹 Editar un tipo
+    
         public int Editar(Tipo tipo)
         {
             int filasAfectadas = 0;
@@ -110,7 +110,7 @@ namespace InmobiliariaMVC.Models
             return filasAfectadas;
         }
 
-        // 🔹 Eliminar un tipo
+        
         public int Eliminar(int id)
         {
             int filasAfectadas = 0;

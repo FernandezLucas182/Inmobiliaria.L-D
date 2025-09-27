@@ -193,7 +193,7 @@ namespace InmobiliariaMVC.Models
         {
             using var connection = new MySqlConnection(connectionString);
 
-            // Verifica solapamiento de fechas
+            // Verificacion solapamiento de fechas
             string checkSql = @"SELECT COUNT(*) FROM contrato
                                 WHERE id_inmueble=@id_inmueble AND estado=1
                                 AND NOT (@fecha_fin <= fecha_desde OR @fecha_inicio >= fecha_hasta)";
@@ -300,7 +300,7 @@ namespace InmobiliariaMVC.Models
         INNER JOIN inquilino i ON c.id_inquilino = i.id_inquilino
         INNER JOIN inmueble inm ON c.id_inmueble = inm.id_inmueble
         INNER JOIN tipo t ON inm.id_tipo = t.id_tipo
-        WHERE c.estado = 1;";  // solo contratos activos
+        WHERE c.estado = 1;";  
 
             using var command = new MySqlCommand(sql, connection);
             connection.Open();
