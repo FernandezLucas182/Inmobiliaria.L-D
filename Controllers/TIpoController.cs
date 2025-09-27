@@ -60,18 +60,9 @@ namespace InmobiliariaMVC.Controllers
             return View(tipo);
         }
 
-        // GET: Tipo/Delete/5
-        public IActionResult Delete(int id)
-        {
-            var tipo = repo.ObtenerPorId(id);
-            if (tipo == null)
-                return NotFound();
 
-            return View(tipo);
-        }
 
-        // POST: Tipo/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
