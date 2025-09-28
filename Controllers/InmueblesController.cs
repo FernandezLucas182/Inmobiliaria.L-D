@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace InmobiliariaMVC.Controllers
 {
+    [Authorize]
     public class InmuebleController : Controller
     {
         private readonly InmuebleRepositorio repositorio = new InmuebleRepositorio();
@@ -13,8 +15,9 @@ namespace InmobiliariaMVC.Controllers
 
 
 
-       
+
         // GET: Inmueble
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Index(string? filtro, bool? disponibles, int? id_propietario)
         {
             List<Inmueble> lista;
@@ -58,10 +61,10 @@ namespace InmobiliariaMVC.Controllers
                 lista = repositorio.ObtenerTodos();
                 filtro = ""; // sin filtro = todos
             }
-             // --- Filtrar por propietario si se seleccionó alguno ---
+            // --- Filtrar por propietario si se seleccionó alguno ---
             if (id_propietario.HasValue)
             {
-              lista = lista.Where(x => x.Propietario != null && x.Propietario.id_propietario == id_propietario.Value).ToList();
+                lista = lista.Where(x => x.Propietario != null && x.Propietario.id_propietario == id_propietario.Value).ToList();
             }
 
             //  Armar lista de filtros para el combo
@@ -87,6 +90,7 @@ namespace InmobiliariaMVC.Controllers
 
 
         // GET: Inmueble/Details/5
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Details(int id)
         {
             var inmueble = repositorio.ObtenerPorId(id);
@@ -98,6 +102,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // GET: Inmueble/Create
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Create()
         {
             var repoPropietario = new PropietarioRepositorio();
@@ -109,6 +114,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Inmueble/Create
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Inmueble inmueble)
@@ -125,6 +131,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // GET: Inmueble/Edit/5
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Edit(int id)
         {
             var inmueble = repositorio.ObtenerPorId(id);
@@ -154,6 +161,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Inmueble/Edit/5
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Inmueble inmueble)
@@ -195,6 +203,7 @@ namespace InmobiliariaMVC.Controllers
 
 
         // GET: Inmueble/Delete/5
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Delete(int id)
         {
             var inmueble = repositorio.ObtenerPorId(id);
@@ -206,6 +215,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Inmueble/Delete/5 (Baja lógica)
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -219,6 +229,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Inmueble/ToggleEstado/5
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         public IActionResult ToggleEstado(int id, bool habilitar)
         {
@@ -240,23 +251,24 @@ namespace InmobiliariaMVC.Controllers
 
             return BadRequest();
         }
-   public IActionResult InmueblesDisponibles(DateTime desde, DateTime hasta)
-{
-    var contratos = repoContrato.ObtenerTodos()
-        .Where(c => (c.fecha_inicio <= hasta && c.fecha_fin >= desde))
-        .Select(c => c.id_inmueble)
-        .ToList();
+        [Authorize(Roles = "Admin,Empleado")]
+        public IActionResult InmueblesDisponibles(DateTime desde, DateTime hasta)
+        {
+            var contratos = repoContrato.ObtenerTodos()
+                .Where(c => (c.fecha_inicio <= hasta && c.fecha_fin >= desde))
+                .Select(c => c.id_inmueble)
+                .ToList();
 
-    var inmueblesDisponibles = repositorio.ObtenerTodos()
-        .Where(i => !contratos.Contains(i.id_inmueble))
-        .ToList();
+            var inmueblesDisponibles = repositorio.ObtenerTodos()
+                .Where(i => !contratos.Contains(i.id_inmueble))
+                .ToList();
 
-    ViewBag.FiltroDisponibles = true;
-    ViewBag.Desde = desde;
-    ViewBag.Hasta = hasta;
+            ViewBag.FiltroDisponibles = true;
+            ViewBag.Desde = desde;
+            ViewBag.Hasta = hasta;
 
-    return View("Index", inmueblesDisponibles);
-}
+            return View("Index", inmueblesDisponibles);
+        }
 
     }
 }

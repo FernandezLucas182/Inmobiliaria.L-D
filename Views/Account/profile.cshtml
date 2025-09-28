@@ -1,10 +1,20 @@
 @model InmobiliariaMVC.Models.Usuario
 
 @{
-    ViewBag.Title = "Mi Perfil";
+    ViewData["Title"] = "Mi Perfil";
 }
 
 <h2>Mi Perfil</h2>
+
+<!-- Mensajes de éxito -->
+@if (ViewBag.ProfileMessage != null)
+{
+    <div class="alert alert-success">@ViewBag.ProfileMessage</div>
+}
+@if (ViewBag.PasswordMessage != null)
+{
+    <div class="alert alert-success">@ViewBag.PasswordMessage</div>
+}
 
 <form asp-action="Profile" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="id_usuario" />
@@ -42,7 +52,6 @@
         else
         {
             <p>No tiene avatar.</p>
-            
         }
     </div>
 

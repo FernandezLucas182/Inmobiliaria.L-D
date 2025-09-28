@@ -4,9 +4,11 @@ using InmobiliariaMVC.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaMVC.Controllers
-{
+{   
+    [Authorize]
     public class PagosController : Controller
     {
         private readonly PagoRepositorio repoPago = new PagoRepositorio();
@@ -14,6 +16,7 @@ namespace InmobiliariaMVC.Controllers
         private readonly MultaService multaService = new MultaService();
 
         // Listado de pagos
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Index()
         {
             var lista = repoPago.ObtenerTodos();
@@ -21,6 +24,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Detalles de un pago
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Details(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
@@ -31,12 +35,13 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Crear pago
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Create()
         {
             CargarContratos();
             return View(new Pago { fecha = DateTime.Today });
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Pago pago)
@@ -60,6 +65,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Editar pago
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Edit(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
@@ -67,6 +73,7 @@ namespace InmobiliariaMVC.Controllers
             return View(pago);
         }
 
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Pago pago)
@@ -81,15 +88,14 @@ namespace InmobiliariaMVC.Controllers
 
             return View(pago);
         }
-
-        // Cancelar pago
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Cancelar(int id)
         {
             var pago = repoPago.ObtenerPorId(id);
             if (pago == null || !pago.estado) return NotFound();
             return View(pago);
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost, ActionName("Cancelar")]
         [ValidateAntiForgeryToken]
         public IActionResult CancelarConfirmed(int id)
@@ -100,6 +106,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Registrar multa (GET)
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult RegistrarMulta(int contratoId)
         {
             var contrato = repoContrato.ObtenerPorId(contratoId);
@@ -127,6 +134,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Registrar multa (POST)
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RegistrarMulta(Pago pago)
@@ -145,7 +153,8 @@ namespace InmobiliariaMVC.Controllers
             return View(pago);
         }
 
-        // Calcular multa para finalización anticipada (JSON)
+        // Calcular multa para finalización anticipada (JSON)   
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult CalcularMulta(int contratoId)
         {
@@ -157,6 +166,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Listado de pagos por contrato
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult PorContrato(int idContrato)
         {
             var lista = repoPago.ObtenerPorContrato(idContrato);
@@ -173,6 +183,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Buscar pagos por contrato
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult BuscarPorContrato()
         {
             var contratos = new ContratoRepositorio().ObtenerTodos();
@@ -181,6 +192,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Crear pago desde contrato
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult CreatePorContrato(int idContrato)
         {
@@ -201,6 +213,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // Obtener siguiente número de pago (JSON)
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public JsonResult ObtenerNroPago(int idContrato)
         {

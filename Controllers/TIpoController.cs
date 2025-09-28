@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaMVC.Controllers
 {
+    [Authorize]
     public class TipoController : Controller
+
     {
         private readonly TipoRepositorio repo = new TipoRepositorio();
 
         // GET: Tipo
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Index()
         {
             var tipos = repo.ObtenerTodos();
@@ -15,12 +19,14 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // GET: Tipo/Create
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Tipo/Create
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Tipo tipo)
@@ -34,6 +40,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // GET: Tipo/Edit/5
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Edit(int id)
         {
             var tipo = repo.ObtenerPorId(id);
@@ -44,6 +51,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Tipo/Edit/5
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Tipo tipo)
@@ -62,6 +70,7 @@ namespace InmobiliariaMVC.Controllers
 
 
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)

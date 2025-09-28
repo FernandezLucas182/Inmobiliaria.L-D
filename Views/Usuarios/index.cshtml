@@ -1,7 +1,9 @@
 @model IEnumerable<InmobiliariaMVC.Models.Usuario>
+
 @{
     ViewData["Title"] = "Usuarios";
 }
+
 <h2>Usuarios</h2>
 
 @if (User.IsInRole("Admin"))
@@ -17,16 +19,16 @@
             <th>Nombre</th>
             <th>Email</th>
             <th>Rol</th>
-            <th></th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach(var u in Model)
+        @foreach (var u in Model)
         {
             <tr>
                 <td>
                     <img src="@Url.Content(string.IsNullOrEmpty(u.avatar_path) ? "/images/imgdef.png" : u.avatar_path)"
-                        alt="Avatar" width="50" height="50" />
+                         alt="Avatar" width="50" height="50" />
                 </td>
                 <td>@u.apellido</td>
                 <td>@u.nombre</td>

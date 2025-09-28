@@ -4,9 +4,11 @@ using InmobiliariaMVC.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaMVC.Controllers
 {
+    [Authorize]
     public class ContratoController : Controller
     {
         private readonly ContratoRepositorio repoContrato = new ContratoRepositorio();
@@ -15,18 +17,20 @@ namespace InmobiliariaMVC.Controllers
         private readonly PagoRepositorio repoPago = new PagoRepositorio();
         private readonly MultaService multaService = new MultaService();
 
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Index()
         {
             var lista = repoContrato.ObtenerTodos();
             return View(lista);
         }
 
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Create()
         {
             CargarListas();
             return View();
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Contrato contrato)
@@ -41,7 +45,7 @@ namespace InmobiliariaMVC.Controllers
             repoContrato.Alta(contrato, userId);
             return RedirectToAction(nameof(Index));
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Edit(int id)
         {
             var contrato = repoContrato.ObtenerPorId(id);
@@ -52,7 +56,7 @@ namespace InmobiliariaMVC.Controllers
 
             return View(contrato);
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Contrato contrato)
@@ -69,14 +73,14 @@ namespace InmobiliariaMVC.Controllers
             ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion", contrato.id_inmueble);
             return View(contrato);
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Details(int id)
         {
             var contrato = repoContrato.ObtenerPorId(id);
             if (contrato == null) return NotFound();
             return View(contrato);
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Terminar(int id)
@@ -91,6 +95,7 @@ namespace InmobiliariaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult TerminarConMulta(int id)
@@ -118,6 +123,7 @@ namespace InmobiliariaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult CalcularMulta(int contratoId)
         {
@@ -134,13 +140,14 @@ namespace InmobiliariaMVC.Controllers
             ViewBag.Inmuebles = new SelectList(repoInmueble.ObtenerTodos(), "id_inmueble", "direccion");
         }
 
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Delete(int id)
         {
             var contrato = repoContrato.ObtenerPorId(id);
             if (contrato == null) return NotFound();
             return View(contrato);
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -149,6 +156,7 @@ namespace InmobiliariaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
         // GET: Contrato/Renovar/5
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Renovar(int id)
         {
             var contrato = repoContrato.ObtenerPorId(id);
@@ -157,7 +165,7 @@ namespace InmobiliariaMVC.Controllers
             // Cargo la vista con los datos actuales, pero listo para editar fechas/nuevo monto
             return View(contrato);
         }
-
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Renovar(int id, Contrato contrato)
@@ -180,6 +188,7 @@ namespace InmobiliariaMVC.Controllers
         // ------------------- INFORMES / FILTROS -------------------
 
         // 1) Contratos vigentes por fecha
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult Vigentes(DateTime desde, DateTime hasta)
         {
@@ -191,6 +200,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // 2) Contratos por inmueble
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult PorInmueble(int inmuebleId)
         {
@@ -201,6 +211,7 @@ namespace InmobiliariaMVC.Controllers
             return View("Index", contratos);
         }
         // 3) Contratos que vencen en X días
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult PorVencimiento(int dias)
         {
