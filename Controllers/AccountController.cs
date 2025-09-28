@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaMVC.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UsuarioRepositorio _repo;
         private readonly PasswordHasher<Usuario> _pwdHasher = new PasswordHasher<Usuario>();
         private readonly IWebHostEnvironment _env;
-
 
         public AccountController(UsuarioRepositorio repo, IWebHostEnvironment env)
         {
@@ -21,26 +21,36 @@ namespace InmobiliariaMVC.Controllers
             _env = env;
         }
 
-        [HttpGet]
+        // ================= LOGIN =================
         [AllowAnonymous]
+        [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            return View(new LoginViewModel());
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
-            var user = _repo.GetByEmail(email);
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Password))
+            {
+                ModelState.AddModelError("", "Email y contraseña son obligatorios.");
+                return View(model);
+            }
+
+            var user = _repo.GetByEmail(model.Email!);
             if (user == null)
             {
                 ModelState.AddModelError("", "Email o contraseña inválidos.");
-                return View();
+                return View(model);
             }
 
-            var verify = _pwdHasher.VerifyHashedPassword(user, user.password_hash, password);
+            var verify = _pwdHasher.VerifyHashedPassword(user, user.password_hash, model.Password!);
             if (verify == PasswordVerificationResult.Success)
             {
                 var claims = new List<Claim>
@@ -55,6 +65,7 @@ namespace InmobiliariaMVC.Controllers
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
@@ -62,9 +73,11 @@ namespace InmobiliariaMVC.Controllers
             }
 
             ModelState.AddModelError("", "Email o contraseña inválidos.");
-            return View();
+            return View(model);
         }
 
+        // ================= LOGOUT =================
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -72,37 +85,38 @@ namespace InmobiliariaMVC.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        [Authorize]
+        // ================= PERFIL =================
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult Profile()
         {
             var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
+            if (user == null) return NotFound();
             return View(user);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
-        [Authorize]
-        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Profile(
-    Usuario model,
-    IFormFile avatarFile,
-    bool EliminarAvatar = false,
-    string? currentPassword = null,
-    string? newPassword = null,
-    string? newPasswordConfirm = null)
+            Usuario model,
+            IFormFile? avatarFile,
+            bool EliminarAvatar = false,
+            string? currentPassword = null,
+            string? newPassword = null,
+            string? newPasswordConfirm = null)
         {
             var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _repo.GetById(id);
             if (user == null) return NotFound();
 
-            // actualizar datos básicos
+            // Actualizar datos básicos
             user.nombre = model.nombre;
             user.apellido = model.apellido;
             user.email = model.email;
 
-            // eliminar avatar si se marcó
+            // Eliminar avatar si se marcó
             if (EliminarAvatar && !string.IsNullOrEmpty(user.avatar_path))
             {
                 var physical = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/', '\\'));
@@ -110,7 +124,7 @@ namespace InmobiliariaMVC.Controllers
                 user.avatar_path = null;
             }
 
-            // subir nuevo avatar con validaciones
+            // Subir nuevo avatar
             if (avatarFile != null && avatarFile.Length > 0)
             {
                 var ext = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
@@ -138,7 +152,7 @@ namespace InmobiliariaMVC.Controllers
                 using var fs = new FileStream(filePath, FileMode.Create);
                 avatarFile.CopyTo(fs);
 
-                // eliminar avatar anterior si existe
+                // Eliminar avatar anterior
                 if (!string.IsNullOrEmpty(user.avatar_path))
                 {
                     var old = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/', '\\'));
@@ -148,7 +162,7 @@ namespace InmobiliariaMVC.Controllers
                 user.avatar_path = $"/uploads/avatars/{fileName}";
             }
 
-            // cambiar contraseña si se ingresó
+            // Cambiar contraseña si se ingresó
             if (!string.IsNullOrEmpty(currentPassword) && !string.IsNullOrEmpty(newPassword) && !string.IsNullOrEmpty(newPasswordConfirm))
             {
                 var verify = _pwdHasher.VerifyHashedPassword(user, user.password_hash, currentPassword);
@@ -163,84 +177,23 @@ namespace InmobiliariaMVC.Controllers
                     return View(user);
                 }
 
-                user.password_hash = _pwdHasher.HashPassword(user, newPassword);
+                var newHash = _pwdHasher.HashPassword(user, newPassword);
+                _repo.UpdatePassword(user.id_usuario, newHash);
             }
 
             _repo.Update(user);
-            return RedirectToAction("Profile");
+
+            ViewBag.ProfileMessage = "Perfil actualizado correctamente.";
+            if (!string.IsNullOrEmpty(newPassword)) ViewBag.PasswordMessage = "Contraseña cambiada correctamente.";
+
+            return View(user);
         }
 
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult DeleteAvatar()
-        {
-            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-            var user = _repo.GetById(id);
-            if (user == null) return NotFound();
-
-            if (!string.IsNullOrEmpty(user.avatar_path))
-            {
-                var physical = Path.Combine(_env.WebRootPath, user.avatar_path.TrimStart('/', '\\'));
-                if (System.IO.File.Exists(physical)) System.IO.File.Delete(physical);
-            }
-
-            user.avatar_path = null;
-            _repo.Update(user);
-            return RedirectToAction("Profile");
-        }
-
-        [Authorize]
-        [HttpGet]
-        public IActionResult ChangePassword() => View();
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult ChangePassword(string currentPassword, string newPassword, string newPasswordConfirm)
-        {
-            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-            var user = _repo.GetById(id);
-            if (user == null) return NotFound();
-
-            var verify = _pwdHasher.VerifyHashedPassword(user, user.password_hash, currentPassword);
-            if (verify != PasswordVerificationResult.Success)
-            {
-                ModelState.AddModelError("", "Contraseña actual incorrecta.");
-                return View();
-            }
-            if (newPassword != newPasswordConfirm)
-            {
-                ModelState.AddModelError("", "La nueva contraseña y su confirmación no coinciden.");
-                return View();
-            }
-
-            var newHash = _pwdHasher.HashPassword(user, newPassword);
-            _repo.UpdatePassword(user.id_usuario, newHash);
-            return RedirectToAction("Profile");
-        }
-
+        // ================= ACCESO DENEGADO =================
         [AllowAnonymous]
-        public IActionResult AccessDenied() => View();
-
-
-        /*   public IActionResult CrearAdmin()
-           {
-               var user = new Usuario
-               {
-                   nombre = "Admin",
-                   apellido = "Principal",
-                   email = "admin@inmobiliaria.com",
-                   rol = "Admin"
-               };
-
-               var hasher = new PasswordHasher<Usuario>();
-               user.password_hash = hasher.HashPassword(user, "Admin123!"); // contraseña inicial
-
-               _repo.Create(user); // o el método que uses para guardar
-               return Content("Usuario administrador creado correctamente");
-           }
-       */
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }
-
-

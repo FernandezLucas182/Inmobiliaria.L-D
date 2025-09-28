@@ -25,18 +25,19 @@ namespace InmobiliariaMVC.Controllers
             return View(list);
         }
 
-        [Authorize(Roles = "Admin")]
-
         #region CREATE
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Usuario model, string password)
         {
             if (!ModelState.IsValid) return View(model);
-
-            // Imagen por defecto si no tiene avatar
-            if (string.IsNullOrEmpty(model.avatar_path))
-            {
-                model.avatar_path = "/images/imgdef.png";
-            }
 
             if (string.IsNullOrWhiteSpace(password))
             {
@@ -51,33 +52,46 @@ namespace InmobiliariaMVC.Controllers
                 return View(model);
             }
 
-            var ph = _pwdHasher.HashPassword(model, password);
-            model.password_hash = ph;
+            model.password_hash = _pwdHasher.HashPassword(model, password);
+
+            // Imagen por defecto
+            if (string.IsNullOrEmpty(model.avatar_path))
+                model.avatar_path = "/images/imgdef.png";
 
             _repo.Create(model);
             return RedirectToAction("Index");
         }
         #endregion
 
+        #region EDIT
+        [Authorize(Roles = "Admin")]
+        public IActionResult Edit(int id)
+        {
+            var u = _repo.GetById(id);
+            if (u == null) return NotFound();
+            return View(u);
+        }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(Usuario model)
         {
             if (!ModelState.IsValid) return View(model);
+
             var u = _repo.GetById(model.id_usuario);
             if (u == null) return NotFound();
 
-            // Admin puede cambiar rol
-            u.email = model.email;
+            // Solo se permite cambiar estos campos
             u.nombre = model.nombre;
             u.apellido = model.apellido;
+            u.email = model.email;
             u.rol = model.rol;
-            u.avatar_path = model.avatar_path;
 
             _repo.Update(u);
             return RedirectToAction("Index");
         }
+        #endregion
 
         [Authorize(Roles = "Admin")]
         public IActionResult Details(int id)
@@ -97,6 +111,7 @@ namespace InmobiliariaMVC.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             _repo.Delete(id);
@@ -104,6 +119,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // ====================== PERFIL USUARIO ======================
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult MiPerfil()
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -111,7 +127,8 @@ namespace InmobiliariaMVC.Controllers
             if (usuario == null) return NotFound();
             return View(usuario);
         }
-        #region ActualizarPerfil
+
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ActualizarPerfil(Usuario model, string NuevaContraseña, IFormFile Avatar, bool EliminarAvatar)
@@ -134,7 +151,6 @@ namespace InmobiliariaMVC.Controllers
                     if (System.IO.File.Exists(rutaAvatar)) System.IO.File.Delete(rutaAvatar);
                 }
                 usuario.avatar_path = "/images/imgdef.png";
-
             }
 
             if (Avatar != null)
@@ -155,9 +171,7 @@ namespace InmobiliariaMVC.Controllers
             }
 
             _repo.Update(usuario);
-
             return RedirectToAction("MiPerfil");
         }
     }
-    #endregion
 }

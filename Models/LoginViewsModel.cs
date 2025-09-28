@@ -6,10 +6,10 @@ namespace InmobiliariaMVC.Models
     {
         [Required(ErrorMessage = "El email es obligatorio")]
         [EmailAddress(ErrorMessage = "Email inválido")]
-        public string? Email { get; set; }
+        public string? Email { get; set; } = "";
 
         [Required(ErrorMessage = "La contraseña es obligatoria")]
         [DataType(DataType.Password)]
-        public string? Password { get; set; }
+        public string? Password { get; set; } = "";
     }
 }

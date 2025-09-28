@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaMVC.Controllers
-{
+{   
+    [Authorize]
     public class InquilinosController : Controller
     {
         // Repositorio para acceder a los datos de Inquilinos
@@ -10,6 +12,7 @@ namespace InmobiliariaMVC.Controllers
 
         // GET: Inquilinos
         // Muestra la lista de todos los inquilinos
+        [Authorize(Roles = "Admin,Empleado")]
         public IActionResult Index()
         {
             var lista = repo.ObtenerTodos();
@@ -18,6 +21,7 @@ namespace InmobiliariaMVC.Controllers
 
         // GET: Inquilinos/Create
         // Muestra el formulario para dar de alta un inquilino
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -25,7 +29,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Inquilinos/Create
-        // Recibe los datos del formulario y guarda un nuevo inquilino
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Inquilino inquilino)
@@ -39,7 +43,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // GET: Inquilinos/Edit/5
-        // Muestra el formulario para editar un inquilino existente
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -52,7 +56,7 @@ namespace InmobiliariaMVC.Controllers
         }
 
         // POST: Inquilinos/Edit/5
-        // Recibe los datos modificados y actualiza el inquilino en la base
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Inquilino inquilino)
@@ -65,16 +69,13 @@ namespace InmobiliariaMVC.Controllers
             return View(inquilino);
         }
 
-        // POST: Inquilinos/Delete/5
-        // Borra un inquilino directamente desde la lista (Index)
-       // POST: Propietarios/Delete/5
-        // Borra un propietario directamente desde la lista (Index)
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            repo.Baja(id); // borra de la base de datos
-            return RedirectToAction(nameof(Index)); // vuelve a mostrar la lista actualizada
+            repo.Baja(id); 
+            return RedirectToAction(nameof(Index)); 
         }
     }
 }

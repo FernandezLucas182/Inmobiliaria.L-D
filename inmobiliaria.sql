@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-09-2025 a las 01:53:25
+-- Tiempo de generación: 28-09-2025 a las 07:57:04
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -34,9 +34,6 @@ CREATE TABLE `contrato` (
   `monto` int(11) NOT NULL,
   `fecha_desde` date NOT NULL,
   `fecha_hasta` date NOT NULL,
-  `fecha_fin_anticipada` date DEFAULT NULL,
-  `multa` int(11) DEFAULT NULL,
-  `meses_adeudado` int(11) DEFAULT NULL,
   `estado` tinyint(1) NOT NULL,
   `CreatedByUserId` int(11) DEFAULT NULL,
   `CreatedAt` datetime DEFAULT NULL,
@@ -48,11 +45,11 @@ CREATE TABLE `contrato` (
 -- Volcado de datos para la tabla `contrato`
 --
 
-INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `fecha_fin_anticipada`, `multa`, `meses_adeudado`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
-(4, 1, 1, 999999, '2025-12-24', '2026-01-30', NULL, NULL, NULL, 0, 2, '2025-09-19 19:03:47', 1, '2025-09-26 14:41:07'),
-(5, 2, 3, 240000, '2025-09-25', '2025-11-30', NULL, NULL, NULL, 1, 1, '2025-09-25 02:33:22', NULL, NULL),
-(6, 3, 5, 50000, '2026-03-13', '2026-04-25', NULL, NULL, NULL, 1, 1, '2025-09-25 02:35:07', NULL, NULL),
-(7, 1, 1, 999999, '2026-12-12', '2029-01-30', NULL, NULL, NULL, 0, 1, '2025-09-25 15:47:48', 1, '2025-09-25 15:51:05');
+INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `id_inmueble`, `monto`, `fecha_desde`, `fecha_hasta`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
+(4, 1, 1, 2457432, '2025-12-24', '2026-02-27', 1, 2, '2025-09-19 19:03:47', 2, '2025-09-19 19:03:57'),
+(5, 2, 3, 240000, '2025-09-25', '2025-11-30', 0, 1, '2025-09-25 02:33:22', 3, '2025-09-28 02:53:25'),
+(6, 3, 5, 50000, '2026-03-13', '2026-04-25', 1, 1, '2025-09-25 02:35:07', 1, '2025-09-26 03:29:04'),
+(7, 4, 10, 5000000, '2026-01-09', '2026-05-30', 1, 3, '2025-09-28 02:55:01', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -80,11 +77,16 @@ CREATE TABLE `inmueble` (
 --
 
 INSERT INTO `inmueble` (`id_inmueble`, `id_propietario`, `id_tipo`, `nombre`, `ambiente`, `precio`, `habilitado`, `direccion`, `uso`, `longitud`, `latitud`, `imagen`) VALUES
-(1, 4, 1, '', 4, 1999999, 1, 'Eva Peron', 'Residencial', 0, 0, ''),
+(1, 4, 1, '', 4, 2500000, 1, 'Eva Peron', 'Residencial', 0, 0, ''),
 (2, 4, 2, '', 6, 689870, 0, 'B Cerro de la cruz', 'Residencial', 0, 0, ''),
 (3, 3, 2, '', 6, 56453, 1, 'B Jardin', 'Comercial', 0, 0, ''),
 (4, 3, 2, '', 2, 29500, 1, 'Potrero', 'Comercial', 0, 0, ''),
-(5, 3, 2, '', 8, 29500, 1, 'La Punta', 'Comercial', 0, 0, '');
+(5, 3, 2, '', 8, 29500, 1, 'La Punta', 'Comercial', 0, 0, ''),
+(6, 3, 2, '', 3, 26000000, 1, 'Potrero', 'Comercial', 0, 0, ''),
+(7, 3, 1, '', 5, 250000, 1, 'Naschel', 'Comercial', 0, 0, ''),
+(8, 3, 2, '', 4, 250000, 1, 'Merlo', 'Comercial', 0, 0, ''),
+(9, 3, 1, '', 4, 25000, 1, 'La Punilla', 'Residencial', 0, 0, ''),
+(10, 3, 2, '', 5, 50000, 1, 'Los Puqios', 'Comercial', 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -108,7 +110,8 @@ CREATE TABLE `inquilino` (
 INSERT INTO `inquilino` (`id_inquilino`, `dni`, `nombre`, `apellido`, `telefono`, `email`) VALUES
 (1, '40111444', 'Juan ', 'Lopez', '2664310294', 'juan.lopez@email.com'),
 (2, '40122555', 'Ana', 'Torres', '294829192', 'ana.torres@email.com'),
-(3, '98372891', 'Matias', 'Perez', '2665209423', 'matiasperez@gmail.com');
+(3, '98372891', 'Matias', 'Perez', '2665209423', 'matiasperez@gmail.com'),
+(4, '33876589', 'Solange', 'Lucero', '266749303', 'solluce@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -135,12 +138,11 @@ CREATE TABLE `pago` (
 --
 
 INSERT INTO `pago` (`id_pago`, `id_contrato`, `fecha`, `importe`, `nro_pago`, `detalle`, `estado`, `CreatedByUserId`, `CreatedAt`, `ClosedByUserId`, `ClosedAt`) VALUES
-(1, 4, '2025-09-25', 25000.00, 1, 'mes 1 de alquiler', 1, 1, '2025-09-25 02:25:42', NULL, NULL),
+(1, 4, '2025-09-25', 25000.00, 1, 'mes1', 1, 1, '2025-09-25 02:25:42', NULL, NULL),
 (2, 5, '2025-09-25', 25000.00, 1, 'pago mes 1', 1, 1, '2025-09-25 02:35:43', NULL, NULL),
-(3, 6, '2025-09-25', 350000.00, 1, 'mes1', 1, 1, '2025-09-25 14:17:29', NULL, NULL),
-(4, 4, '2025-09-25', 260000.00, 2, 'mes 2', 1, 1, '2025-09-25 14:17:48', NULL, NULL),
-(5, 5, '2025-09-25', 25000.00, 2, 'mes 2', 0, 1, '2025-09-25 14:18:02', 1, '2025-09-25 16:46:08'),
-(6, 4, '2025-09-26', 1999998.00, 3, 'Multa por terminación anticipada', 1, 1, '2025-09-26 14:41:07', NULL, NULL);
+(3, 6, '2025-09-26', 100000.00, 1, 'Multa por terminación anticipada', 1, 1, '2025-09-26 03:29:04', NULL, NULL),
+(4, 5, '2025-09-28', 480000.00, 2, 'Multa por terminación anticipada', 1, 3, '2025-09-28 02:53:25', NULL, NULL),
+(5, 4, '2025-09-28', 250000.00, 2, 'mes 2', 1, 3, '2025-09-28 02:54:26', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -162,7 +164,7 @@ CREATE TABLE `propietario` (
 --
 
 INSERT INTO `propietario` (`id_propietario`, `dni`, `apellido`, `nombre`, `telefono`, `email`) VALUES
-(3, '2910492', 'Ramirez', 'juan', '28476391', 'juanramirez@gmail.com'),
+(3, '2910492', 'Ramirez', 'Juan', '28476391', 'juanramirez@gmail.com'),
 (4, '12365378', 'Davinvi', 'Lucas', '294872o', 'jorge.lucas@gmail.com'),
 (5, '294890234', 'Mendez', 'Hernan', '266777883', 'hernanmendez@gmail.com');
 
@@ -182,9 +184,8 @@ CREATE TABLE `tipo` (
 --
 
 INSERT INTO `tipo` (`id_tipo`, `nombre`) VALUES
-(1, 'edificio'),
-(2, 'Departamento'),
-(3, 'casa');
+(1, 'Casa'),
+(2, 'Departamento');
 
 -- --------------------------------------------------------
 
@@ -209,10 +210,9 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `email`, `password_hash`, `nombre`, `apellido`, `avatar_path`, `rol`, `created_at`, `updated_at`) VALUES
-(1, 'admin@inmobiliaria.com', 'AQAAAAIAAYagAAAAEFqmz1vIJVCDnX3Tuy5MArsDBkZZ6l/dsUI3NuQXnAoRVpN3wan/153ShiTbaL4XEg==', 'Lucas', 'Fernandez', '/uploads/avatars/2fc8de36-ef5d-4ccd-97bf-4d8ee5e07280.png', 'Admin', '2025-09-19 18:06:26', '2025-09-22 13:03:27'),
-(2, 'empleado1@inmobiliaria.com', 'AQAAAAIAAYagAAAAEHLngQzyvoKjl2GtJgY2s84Wnq/YYFPnuUdGuE/wAw2Jx7XPRaXKKp/8WvZ/T/NnOw==', 'Jorge', 'Mendez', '/uploads/avatars/0c5f961a-3016-4a51-9f9a-6343192b7163.png', 'Empleado', '2025-09-19 18:08:58', '2025-09-25 17:14:40'),
-(6, 'luis@inmobiliaria.com', 'AQAAAAIAAYagAAAAEOJYUkTkhA+HxIysdLmq1/IOHh4xeF0fy2uBgOfI325ZfqELYcfdSPEAz9gBvZCC7A==', 'luis', 'oros', '/images/imgdef.png', 'Empleado', '2025-09-25 21:15:47', '2025-09-25 21:15:47'),
-(8, 'mOrtiz@inmobiliaria.com', 'AQAAAAIAAYagAAAAEMfJvTC9ZZYn8Rg6mnH5Ah6eOPBHZUwvETcqZ/Z7EGwNJc9LONIwiX1qQOJp67Z8vQ==', 'maida', 'ortiz', '/images/imgdef.png', 'Empleado', '2025-09-26 11:49:00', '2025-09-26 11:49:00');
+(1, 'admin@inmobiliaria.com', 'AQAAAAIAAYagAAAAECKMskJHz7OWMEG6z/JidoWyKf9FJ8YJtJNUKPRSn3m+SwAiLmeQZzfUzLQdr7PksA==', 'Lucas', 'Fernandez', '/uploads/avatars/2fc8de36-ef5d-4ccd-97bf-4d8ee5e07280.png', 'Admin', '2025-09-19 18:06:26', '2025-09-28 02:34:14'),
+(2, 'empleado1@inmobiliaria.com', 'AQAAAAIAAYagAAAAEHLngQzyvoKjl2GtJgY2s84Wnq/YYFPnuUdGuE/wAw2Jx7XPRaXKKp/8WvZ/T/NnOw==', 'Jorge', 'Mendez', '', 'Empleado', '2025-09-19 18:08:58', '2025-09-19 18:08:58'),
+(3, 'empleado5@gmail.com', 'AQAAAAIAAYagAAAAEC0xd81VNf+fdrC7lEbbuhquRORaPz47b4A/4V5HPSKnUnXWOx1xuVCbfSZtSWZnJQ==', 'Isaias', 'Felippo', '/images/imgdef.png', 'Empleado', '2025-09-28 02:37:54', '2025-09-28 02:38:55');
 
 --
 -- Índices para tablas volcadas
@@ -276,25 +276,25 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_contrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
 --
 ALTER TABLE `inquilino`
-  MODIFY `id_inquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_inquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
@@ -306,13 +306,13 @@ ALTER TABLE `propietario`
 -- AUTO_INCREMENT de la tabla `tipo`
 --
 ALTER TABLE `tipo`
-  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
